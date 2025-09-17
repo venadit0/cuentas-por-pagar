@@ -124,6 +124,7 @@ function App() {
       setSelectedFile(null);
       fetchInvoices();
       fetchResumenGeneral();
+      fetchEstadoCuentaPagadas();
       
       // Limpiar el input
       document.getElementById("pdf-upload").value = "";
