@@ -626,6 +626,173 @@ async def get_estado_cuenta_pagadas(empresa_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# NUEVOS ENDPOINTS PARA EXPORTAR A EXCEL
+@api_router.get("/export/facturas-pendientes/{empresa_id}")
+async def export_facturas_pendientes_excel(empresa_id: str):
+    """Exporta facturas pendientes a Excel"""
+    try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        # Obtener facturas pendientes
+        facturas = await db.invoices.find({"empresa_id": empresa_id, "estado_pago": "pendiente"}).to_list(1000)
+        
+        # Crear archivo Excel
+        excel_buffer = create_invoices_excel(facturas, "pendientes", empresa['nombre'])
+        
+        # Crear nombre de archivo
+        fecha_actual = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"facturas_pendientes_{empresa['nombre'].replace(' ', '_')}_{fecha_actual}.xlsx"
+        
+        # Crear archivo temporal
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
+            temp_file.write(excel_buffer.getvalue())
+            temp_file_path = temp_file.name
+        
+        # Retornar archivo para descarga
+        return FileResponse(
+            path=temp_file_path,
+            filename=filename,
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error exportando facturas pendientes: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error exportando facturas pendientes: {str(e)}")
+
+
+@api_router.get("/export/facturas-pagadas/{empresa_id}")
+async def export_facturas_pagadas_excel(empresa_id: str):
+    """Exporta facturas pagadas a Excel"""
+    try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        # Obtener facturas pagadas
+        facturas = await db.invoices.find({"empresa_id": empresa_id, "estado_pago": "pagado"}).to_list(1000)
+        
+        # Crear archivo Excel
+        excel_buffer = create_invoices_excel(facturas, "pagadas", empresa['nombre'])
+        
+        # Crear nombre de archivo
+        fecha_actual = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"facturas_pagadas_{empresa['nombre'].replace(' ', '_')}_{fecha_actual}.xlsx"
+        
+        # Crear archivo temporal
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
+            temp_file.write(excel_buffer.getvalue())
+            temp_file_path = temp_file.name
+        
+        # Retornar archivo para descarga
+        return FileResponse(
+            path=temp_file_path,
+            filename=filename,
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error exportando facturas pagadas: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error exportando facturas pagadas: {str(e)}")
+
+
+@api_router.get("/export/resumen-general/{empresa_id}")
+async def export_resumen_general_excel(empresa_id: str):
+    """Exporta resumen general a Excel"""
+    try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        # Obtener resumen general (reutilizar función existente)
+        resumen = await get_resumen_general(empresa_id)
+        resumen_dict = resumen.dict()
+        
+        # Crear archivo Excel
+        excel_buffer = create_summary_excel(resumen_dict, empresa['nombre'])
+        
+        # Crear nombre de archivo
+        fecha_actual = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"resumen_general_{empresa['nombre'].replace(' ', '_')}_{fecha_actual}.xlsx"
+        
+        # Crear archivo temporal
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
+            temp_file.write(excel_buffer.getvalue())
+            temp_file_path = temp_file.name
+        
+        # Retornar archivo para descarga
+        return FileResponse(
+            path=temp_file_path,
+            filename=filename,
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error exportando resumen general: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error exportando resumen general: {str(e)}")
+
+
+# ENDPOINT PARA ELIMINAR EMPRESA (SOFT DELETE)
+@api_router.delete("/empresas/{empresa_id}")
+async def delete_empresa(empresa_id: str):
+    """Elimina una empresa (soft delete) y todas sus facturas"""
+    try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        # Contar facturas asociadas
+        facturas_count = await db.invoices.count_documents({"empresa_id": empresa_id})
+        
+        # Eliminar todas las facturas de la empresa y sus archivos PDF
+        facturas = await db.invoices.find({"empresa_id": empresa_id}).to_list(1000)
+        for factura in facturas:
+            # Eliminar archivo PDF si existe
+            if factura.get('archivo_pdf'):
+                file_path = f"/app/uploads/{factura['archivo_pdf']}"
+                if os.path.exists(file_path):
+                    try:
+                        os.unlink(file_path)
+                        logging.info(f"Archivo PDF eliminado: {file_path}")
+                    except Exception as e:
+                        logging.warning(f"No se pudo eliminar el archivo PDF: {str(e)}")
+        
+        # Eliminar todas las facturas de la empresa
+        await db.invoices.delete_many({"empresa_id": empresa_id})
+        
+        # Marcar empresa como inactiva (soft delete)
+        result = await db.empresas.update_one(
+            {"id": empresa_id},
+            {"$set": {"activa": False, "fecha_eliminacion": datetime.now(timezone.utc)}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        return {
+            "success": True, 
+            "message": f"Empresa eliminada correctamente. Se eliminaron {facturas_count} facturas asociadas.",
+            "facturas_eliminadas": facturas_count
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error eliminando empresa: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error eliminando la empresa: {str(e)}")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
