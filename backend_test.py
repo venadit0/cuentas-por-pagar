@@ -14,7 +14,7 @@ class InvoiceAPITester:
         self.created_invoice_id = None
         self.test_empresa_id = "f94fee4d-dc88-41b8-b4eb-d611d3c4bbb1"  # Demo company ID
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, files=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, files=None, response_type='json'):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'} if not files else {}
@@ -33,15 +33,22 @@ class InvoiceAPITester:
                     response = requests.post(url, json=data, headers=headers)
             elif method == 'PUT':
                 response = requests.put(url, json=data, headers=headers)
+            elif method == 'DELETE':
+                response = requests.delete(url, headers=headers)
 
             success = response.status_code == expected_status
             if success:
                 self.tests_passed += 1
                 print(f"✅ Passed - Status: {response.status_code}")
                 try:
-                    response_data = response.json()
-                    print(f"   Response: {json.dumps(response_data, indent=2)[:200]}...")
-                    return True, response_data
+                    if response_type == 'json':
+                        response_data = response.json()
+                        print(f"   Response: {json.dumps(response_data, indent=2)[:200]}...")
+                        return True, response_data
+                    else:
+                        # For binary responses like PDF downloads
+                        print(f"   Response size: {len(response.content)} bytes")
+                        return True, response.content
                 except:
                     return True, {}
             else:
