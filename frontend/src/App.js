@@ -8,7 +8,9 @@ import { Badge } from "./components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
-import { Upload, FileText, DollarSign, Users, Clock, CheckCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
+import { Label } from "./components/ui/label";
+import { Upload, FileText, DollarSign, Users, Clock, CheckCircle, Building, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "./hooks/use-toast";
 import { Toaster } from "./components/ui/sonner";
 
@@ -16,6 +18,22 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function App() {
+  // Estados principales
+  const [currentView, setCurrentView] = useState("empresas"); // "empresas" o "empresa-detail"
+  const [selectedEmpresa, setSelectedEmpresa] = useState(null);
+  const [empresas, setEmpresas] = useState([]);
+  
+  // Estados para nueva empresa
+  const [newEmpresa, setNewEmpresa] = useState({
+    nombre: "",
+    rut_cuit: "",
+    direccion: "",
+    telefono: "",
+    email: ""
+  });
+  const [showNewEmpresaDialog, setShowNewEmpresaDialog] = useState(false);
+  
+  // Estados de la aplicación de facturas (cuando hay empresa seleccionada)
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [invoices, setInvoices] = useState([]);
@@ -26,12 +44,19 @@ function App() {
   const [filterProveedor, setFilterProveedor] = useState("");
   const { toast } = useToast();
 
-  // Cargar datos iniciales
+  // Cargar empresas al iniciar
   useEffect(() => {
-    fetchInvoices();
-    fetchResumenGeneral();
-    fetchEstadoCuentaPagadas();
+    fetchEmpresas();
   }, []);
+
+  // Cargar datos de la empresa cuando se selecciona una
+  useEffect(() => {
+    if (selectedEmpresa && currentView === "empresa-detail") {
+      fetchInvoices();
+      fetchResumenGeneral();
+      fetchEstadoCuentaPagadas();
+    }
+  }, [selectedEmpresa, currentView]);
 
   // Aplicar filtros
   useEffect(() => {
@@ -50,9 +75,80 @@ function App() {
     setFilteredInvoices(filtered);
   }, [invoices, filterEstado, filterProveedor]);
 
-  const fetchInvoices = async () => {
+  // ===== FUNCIONES DE EMPRESA =====
+  const fetchEmpresas = async () => {
     try {
-      const response = await axios.get(`${API}/invoices`);
+      const response = await axios.get(`${API}/empresas`);
+      setEmpresas(response.data);
+    } catch (error) {
+      console.error("Error fetching empresas:", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar las empresas",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const createEmpresa = async () => {
+    if (!newEmpresa.nombre.trim()) {
+      toast({
+        title: "Error",
+        description: "El nombre de la empresa es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/empresas`, newEmpresa);
+      
+      toast({
+        title: "¡Éxito!",
+        description: "Empresa creada correctamente",
+      });
+
+      setNewEmpresa({
+        nombre: "",
+        rut_cuit: "",
+        direccion: "",
+        telefono: "",
+        email: ""
+      });
+      setShowNewEmpresaDialog(false);
+      fetchEmpresas();
+    } catch (error) {
+      console.error("Error creating empresa:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo crear la empresa",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const selectEmpresa = (empresa) => {
+    setSelectedEmpresa(empresa);
+    setCurrentView("empresa-detail");
+    // Limpiar datos anteriores
+    setInvoices([]);
+    setResumenGeneral(null);
+    setEstadoCuentaPagadas(null);
+    setFilterEstado("todos");
+    setFilterProveedor("");
+  };
+
+  const backToEmpresas = () => {
+    setCurrentView("empresas");
+    setSelectedEmpresa(null);
+  };
+
+  // ===== FUNCIONES DE FACTURAS (cuando hay empresa seleccionada) =====
+  const fetchInvoices = async () => {
+    if (!selectedEmpresa) return;
+    
+    try {
+      const response = await axios.get(`${API}/invoices/${selectedEmpresa.id}`);
       setInvoices(response.data);
     } catch (error) {
       console.error("Error fetching invoices:", error);
@@ -65,8 +161,10 @@ function App() {
   };
 
   const fetchResumenGeneral = async () => {
+    if (!selectedEmpresa) return;
+    
     try {
-      const response = await axios.get(`${API}/resumen/general`);
+      const response = await axios.get(`${API}/resumen/general/${selectedEmpresa.id}`);
       setResumenGeneral(response.data);
     } catch (error) {
       console.error("Error fetching resumen:", error);
@@ -74,8 +172,10 @@ function App() {
   };
 
   const fetchEstadoCuentaPagadas = async () => {
+    if (!selectedEmpresa) return;
+    
     try {
-      const response = await axios.get(`${API}/estado-cuenta/pagadas`);
+      const response = await axios.get(`${API}/estado-cuenta/pagadas/${selectedEmpresa.id}`);
       setEstadoCuentaPagadas(response.data);
     } catch (error) {
       console.error("Error fetching estado cuenta pagadas:", error);
@@ -105,12 +205,21 @@ function App() {
       return;
     }
 
+    if (!selectedEmpresa) {
+      toast({
+        title: "Error",
+        description: "No hay empresa seleccionada",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append("file", selectedFile);
 
     try {
-      const response = await axios.post(`${API}/upload-pdf`, formData, {
+      const response = await axios.post(`${API}/upload-pdf/${selectedEmpresa.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -155,7 +264,6 @@ function App() {
       fetchInvoices();
       fetchResumenGeneral();
       fetchEstadoCuentaPagadas();
-      fetchEstadoCuentaPagadas();
     } catch (error) {
       console.error("Error updating status:", error);
       toast({
@@ -177,16 +285,171 @@ function App() {
     return new Date(dateString).toLocaleDateString("es-AR");
   };
 
+  // ===== RENDER CONDICIONAL =====
+  if (currentView === "empresas") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-slate-800 mb-4">
+              Panel de Gestión Empresarial
+            </h1>
+            <p className="text-slate-600 text-xl">
+              Gestiona las cuentas por pagar de todas tus empresas desde un solo lugar
+            </p>
+          </div>
+
+          {/* Botón para crear nueva empresa */}
+          <div className="mb-8 text-center">
+            <Dialog open={showNewEmpresaDialog} onOpenChange={setShowNewEmpresaDialog}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Nueva Empresa
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Crear Nueva Empresa</DialogTitle>
+                  <DialogDescription>
+                    Ingresa los datos de la nueva empresa para comenzar a gestionar sus cuentas por pagar.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="nombre">Nombre de la Empresa *</Label>
+                    <Input
+                      id="nombre"
+                      value={newEmpresa.nombre}
+                      onChange={(e) => setNewEmpresa({...newEmpresa, nombre: e.target.value})}
+                      placeholder="Ej: Mi Empresa S.A."
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rut_cuit">RUT/CUIT</Label>
+                    <Input
+                      id="rut_cuit"
+                      value={newEmpresa.rut_cuit}
+                      onChange={(e) => setNewEmpresa({...newEmpresa, rut_cuit: e.target.value})}
+                      placeholder="Ej: 20-12345678-9"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="direccion">Dirección</Label>
+                    <Input
+                      id="direccion"
+                      value={newEmpresa.direccion}
+                      onChange={(e) => setNewEmpresa({...newEmpresa, direccion: e.target.value})}
+                      placeholder="Ej: Av. Principal 123"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="telefono">Teléfono</Label>
+                    <Input
+                      id="telefono"
+                      value={newEmpresa.telefono}
+                      onChange={(e) => setNewEmpresa({...newEmpresa, telefono: e.target.value})}
+                      placeholder="Ej: +54 11 1234-5678"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newEmpresa.email}
+                      onChange={(e) => setNewEmpresa({...newEmpresa, email: e.target.value})}
+                      placeholder="Ej: contacto@miempresa.com"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button variant="outline" onClick={() => setShowNewEmpresaDialog(false)} className="flex-1">
+                      Cancelar
+                    </Button>
+                    <Button onClick={createEmpresa} className="flex-1">
+                      Crear Empresa
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Lista de empresas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {empresas.map((empresa) => (
+              <Card 
+                key={empresa.id} 
+                className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-blue-300"
+                onClick={() => selectEmpresa(empresa)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <Building className="h-8 w-8 text-blue-600" />
+                    <ArrowRight className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <CardTitle className="text-xl">{empresa.nombre}</CardTitle>
+                  {empresa.rut_cuit && (
+                    <CardDescription>RUT/CUIT: {empresa.rut_cuit}</CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    {empresa.direccion && (
+                      <p>📍 {empresa.direccion}</p>
+                    )}
+                    {empresa.telefono && (
+                      <p>📞 {empresa.telefono}</p>
+                    )}
+                    {empresa.email && (
+                      <p>📧 {empresa.email}</p>
+                    )}
+                  </div>
+                  <Button className="w-full mt-4" variant="outline">
+                    Gestionar Cuentas por Pagar
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {empresas.length === 0 && (
+            <div className="text-center py-12">
+              <Building className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-slate-600 mb-2">
+                No hay empresas registradas
+              </h3>
+              <p className="text-slate-500 mb-6">
+                Crea tu primera empresa para comenzar a gestionar las cuentas por pagar
+              </p>
+            </div>
+          )}
+        </div>
+        <Toaster />
+      </div>
+    );
+  }
+
+  // Vista detalle de empresa (aplicación original adaptada)
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">
-            Gestión de Cuentas por Pagar
-          </h1>
-          <p className="text-slate-600 text-lg">
-            Sube PDFs de facturas y extrae datos automáticamente con IA
-          </p>
+        {/* Header con información de empresa */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <Button variant="outline" onClick={backToEmpresas} className="mb-4">
+              ← Volver a Empresas
+            </Button>
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">
+              {selectedEmpresa?.nombre}
+            </h1>
+            <p className="text-slate-600 text-lg">
+              Gestión de Cuentas por Pagar
+            </p>
+            {selectedEmpresa?.rut_cuit && (
+              <p className="text-slate-500">RUT/CUIT: {selectedEmpresa.rut_cuit}</p>
+            )}
+          </div>
         </div>
 
         <Tabs defaultValue="upload" className="space-y-6">
