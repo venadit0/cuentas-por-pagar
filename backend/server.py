@@ -184,9 +184,19 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...)):
         if not file.filename.endswith('.pdf'):
             raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF")
         
-        # Guardar temporalmente el archivo
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+        # Crear nombre único para el archivo
+        file_id = str(uuid.uuid4())
+        file_extension = ".pdf"
+        unique_filename = f"{file_id}{file_extension}"
+        upload_path = f"/app/uploads/{unique_filename}"
+        
+        # Guardar archivo permanentemente
+        with open(upload_path, "wb") as buffer:
             content = await file.read()
+            buffer.write(content)
+        
+        # Guardar temporalmente para procesamiento con Gemini
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
             temp_file.write(content)
             temp_file_path = temp_file.name
 
@@ -255,7 +265,8 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...)):
                     'monto': float(extracted_data['monto']),
                     'estado_pago': 'pendiente',
                     'fecha_creacion': datetime.now(timezone.utc),
-                    'archivo_pdf': file.filename
+                    'archivo_pdf': unique_filename,  # Guardar nombre único del archivo
+                    'archivo_original': file.filename  # Guardar nombre original
                 }
                 
                 # Preparar para MongoDB
@@ -273,7 +284,8 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...)):
                     "fecha_factura": invoice_data['fecha_factura'],
                     "monto": invoice_data['monto'],
                     "estado_pago": invoice_data['estado_pago'],
-                    "archivo_pdf": invoice_data['archivo_pdf']
+                    "archivo_pdf": invoice_data['archivo_pdf'],
+                    "archivo_original": invoice_data['archivo_original']
                 }
                 
                 return JSONResponse(content={
@@ -283,6 +295,9 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...)):
                 })
                 
             except json.JSONDecodeError:
+                # Si falla el procesamiento de IA, eliminar el archivo guardado
+                if os.path.exists(upload_path):
+                    os.unlink(upload_path)
                 raise HTTPException(status_code=500, detail="Error al procesar la respuesta de IA")
                 
         finally:
