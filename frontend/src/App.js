@@ -1059,7 +1059,17 @@ function App() {
           <TabsContent value="facturas">
             <Card>
               <CardHeader>
-                <CardTitle>Lista de Facturas</CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Lista de Facturas</CardTitle>
+                  <Button 
+                    onClick={exportFacturasPendientes}
+                    variant="outline"
+                    className="text-green-600 hover:text-green-700"
+                  >
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    Exportar a Excel
+                  </Button>
+                </div>
                 <div className="flex gap-4 mt-4">
                   <Select value={filterEstado} onValueChange={setFilterEstado}>
                     <SelectTrigger className="w-48">
