@@ -353,6 +353,187 @@ function App() {
     }
   };
 
+  // ===== FUNCIONES DE EXPORTACIÓN A EXCEL =====
+  const exportFacturasPendientes = async () => {
+    if (!selectedEmpresa) return;
+    
+    try {
+      const response = await axios.get(`${API}/export/facturas-pendientes/${selectedEmpresa.id}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de facturas pendientes descargado",
+      });
+    } catch (error) {
+      console.error("Error exporting pending invoices:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo exportar las facturas pendientes",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const exportFacturasPagadas = async () => {
+    if (!selectedEmpresa) return;
+    
+    try {
+      const response = await axios.get(`${API}/export/facturas-pagadas/${selectedEmpresa.id}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de facturas pagadas descargado",
+      });
+    } catch (error) {
+      console.error("Error exporting paid invoices:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo exportar las facturas pagadas",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const exportResumenGeneral = async () => {
+    if (!selectedEmpresa) return;
+    
+    try {
+      const response = await axios.get(`${API}/export/resumen-general/${selectedEmpresa.id}`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de resumen general descargado",
+      });
+    } catch (error) {
+      console.error("Error exporting general summary:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo exportar el resumen general",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // ===== FUNCIONES DE GESTIÓN DE EMPRESAS =====
+  const openEditEmpresa = (empresa) => {
+    setEmpresaToEdit(empresa);
+    setEditEmpresaData({
+      nombre: empresa.nombre || "",
+      rut_cuit: empresa.rut_cuit || "",
+      direccion: empresa.direccion || "",
+      telefono: empresa.telefono || "",
+      email: empresa.email || ""
+    });
+    setShowEditEmpresaDialog(true);
+  };
+
+  const updateEmpresa = async () => {
+    if (!empresaToEdit) return;
+
+    if (!editEmpresaData.nombre.trim()) {
+      toast({
+        title: "Error",
+        description: "El nombre de la empresa es requerido",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await axios.put(`${API}/empresas/${empresaToEdit.id}`, editEmpresaData);
+      
+      toast({
+        title: "¡Actualizada!",
+        description: "Datos de la empresa actualizados correctamente",
+      });
+
+      setShowEditEmpresaDialog(false);
+      setEmpresaToEdit(null);
+      fetchEmpresas();
+      
+      // Si estamos editando la empresa seleccionada, actualizar la información
+      if (selectedEmpresa && selectedEmpresa.id === empresaToEdit.id) {
+        setSelectedEmpresa({...empresaToEdit, ...editEmpresaData});
+      }
+      
+    } catch (error) {
+      console.error("Error updating empresa:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la empresa",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const confirmDeleteEmpresa = (empresa) => {
+    setEmpresaToDelete(empresa);
+    setShowDeleteEmpresaDialog(true);
+  };
+
+  const deleteEmpresa = async () => {
+    if (!empresaToDelete) return;
+
+    try {
+      const response = await axios.delete(`${API}/empresas/${empresaToDelete.id}`);
+      
+      toast({
+        title: "¡Empresa eliminada!",
+        description: `${empresaToDelete.nombre} eliminada correctamente. ${response.data.facturas_eliminadas} facturas eliminadas.`,
+      });
+
+      setShowDeleteEmpresaDialog(false);
+      setEmpresaToDelete(null);
+      fetchEmpresas();
+      
+      // Si eliminamos la empresa seleccionada, volver al panel principal
+      if (selectedEmpresa && selectedEmpresa.id === empresaToDelete.id) {
+        backToEmpresas();
+      }
+      
+    } catch (error) {
+      console.error("Error deleting empresa:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la empresa",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
