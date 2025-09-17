@@ -154,7 +154,7 @@ class InvoiceAPITester:
                 success, response_data = self.run_test(
                     "Upload PDF", 
                     "POST", 
-                    "upload-pdf", 
+                    f"upload-pdf/{self.test_empresa_id}", 
                     200,  # Expecting success, but might fail due to Gemini processing
                     files=files
                 )
