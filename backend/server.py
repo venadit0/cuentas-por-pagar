@@ -170,13 +170,21 @@ async def upload_pdf(file: UploadFile = File(...)):
                 # Insertar en la base de datos
                 await db.invoices.insert_one(invoice_data)
                 
-                # Convertir de vuelta para la respuesta
-                invoice_data = parse_from_mongo(invoice_data)
+                # Crear respuesta sin objetos datetime
+                response_data = {
+                    "id": invoice_data['id'],
+                    "numero_factura": invoice_data['numero_factura'],
+                    "nombre_proveedor": invoice_data['nombre_proveedor'],
+                    "fecha_factura": invoice_data['fecha_factura'],
+                    "monto": invoice_data['monto'],
+                    "estado_pago": invoice_data['estado_pago'],
+                    "archivo_pdf": invoice_data['archivo_pdf']
+                }
                 
                 return JSONResponse(content={
                     "success": True,
                     "message": "PDF procesado exitosamente",
-                    "data": invoice_data
+                    "data": response_data
                 })
                 
             except json.JSONDecodeError:
