@@ -73,6 +73,15 @@ function App() {
     }
   };
 
+  const fetchEstadoCuentaPagadas = async () => {
+    try {
+      const response = await axios.get(`${API}/estado-cuenta/pagadas`);
+      setEstadoCuentaPagadas(response.data);
+    } catch (error) {
+      console.error("Error fetching estado cuenta pagadas:", error);
+    }
+  };
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
