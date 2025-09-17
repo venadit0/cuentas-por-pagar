@@ -1305,6 +1305,121 @@ function App() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog para editar empresa */}
+      <Dialog open={showEditEmpresaDialog} onOpenChange={setShowEditEmpresaDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Editar Empresa
+            </DialogTitle>
+            <DialogDescription>
+              Modifica los datos de la empresa {empresaToEdit?.nombre}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit_nombre">Nombre de la Empresa *</Label>
+              <Input
+                id="edit_nombre"
+                value={editEmpresaData.nombre}
+                onChange={(e) => setEditEmpresaData({...editEmpresaData, nombre: e.target.value})}
+                placeholder="Ej: Mi Empresa S.A."
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit_rut_cuit">RUT/CUIT</Label>
+              <Input
+                id="edit_rut_cuit"
+                value={editEmpresaData.rut_cuit}
+                onChange={(e) => setEditEmpresaData({...editEmpresaData, rut_cuit: e.target.value})}
+                placeholder="Ej: 20-12345678-9"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit_direccion">Dirección</Label>
+              <Input
+                id="edit_direccion"
+                value={editEmpresaData.direccion}
+                onChange={(e) => setEditEmpresaData({...editEmpresaData, direccion: e.target.value})}
+                placeholder="Ej: Av. Principal 123"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit_telefono">Teléfono</Label>
+              <Input
+                id="edit_telefono"
+                value={editEmpresaData.telefono}
+                onChange={(e) => setEditEmpresaData({...editEmpresaData, telefono: e.target.value})}
+                placeholder="Ej: +54 11 1234-5678"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit_email">Email</Label>
+              <Input
+                id="edit_email"
+                type="email"
+                value={editEmpresaData.email}
+                onChange={(e) => setEditEmpresaData({...editEmpresaData, email: e.target.value})}
+                placeholder="Ej: contacto@miempresa.com"
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowEditEmpresaDialog(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button onClick={updateEmpresa} className="flex-1">
+                Actualizar Empresa
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de confirmación para eliminar empresa */}
+      <Dialog open={showDeleteEmpresaDialog} onOpenChange={setShowDeleteEmpresaDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              Confirmar Eliminación de Empresa
+            </DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la empresa{" "}
+              <strong>{empresaToDelete?.nombre}</strong>?
+              <br />
+              <br />
+              <span className="text-red-600 font-semibold">
+                ⚠️ ADVERTENCIA: Esta acción eliminará permanentemente:
+              </span>
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>La empresa y todos sus datos</li>
+                <li>Todas las facturas asociadas</li>
+                <li>Todos los archivos PDF almacenados</li>
+                <li>Todos los reportes y resúmenes</li>
+              </ul>
+              <br />
+              <strong>Esta acción NO se puede deshacer.</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeleteEmpresaDialog(false)} 
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={deleteEmpresa} 
+              className="flex-1 bg-red-600 hover:bg-red-700"
+            >
+              Eliminar Empresa
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <Toaster />
     </div>
