@@ -279,6 +279,67 @@ function App() {
     }
   };
 
+  const downloadInvoicePDF = async (invoiceId, numeroFactura) => {
+    try {
+      const response = await axios.get(`${API}/invoices/${invoiceId}/download`, {
+        responseType: 'blob'
+      });
+
+      // Crear URL del blob y descargar
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `factura_${numeroFactura}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "¡Descarga iniciada!",
+        description: `PDF de la factura ${numeroFactura} descargado`,
+      });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo descargar el PDF de la factura",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const confirmDeleteInvoice = (invoice) => {
+    setInvoiceToDelete(invoice);
+    setShowDeleteDialog(true);
+  };
+
+  const deleteInvoice = async () => {
+    if (!invoiceToDelete) return;
+
+    try {
+      await axios.delete(`${API}/invoices/${invoiceToDelete.id}`);
+
+      toast({
+        title: "¡Eliminada!",
+        description: `Factura ${invoiceToDelete.numero_factura} eliminada correctamente`,
+      });
+
+      setShowDeleteDialog(false);
+      setInvoiceToDelete(null);
+      fetchInvoices();
+      fetchResumenGeneral();
+      fetchEstadoCuentaPagadas();
+    } catch (error) {
+      console.error("Error deleting invoice:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar la factura",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
