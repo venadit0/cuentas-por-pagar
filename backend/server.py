@@ -57,7 +57,8 @@ class Invoice(BaseModel):
     monto: float
     estado_pago: str = "pendiente"  # pendiente, pagado
     fecha_creacion: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    archivo_pdf: Optional[str] = None
+    archivo_pdf: Optional[str] = None  # Nombre único del archivo
+    archivo_original: Optional[str] = None  # Nombre original del archivo
 
 class InvoiceCreate(BaseModel):
     empresa_id: str  # Nueva relación con empresa
