@@ -198,6 +198,95 @@ class InvoiceAPITester:
         
         return success1 and success2
 
+    def test_download_invoice_pdf(self):
+        """Test the NEW PDF download endpoint"""
+        if not self.created_invoice_id:
+            print("⚠️  Skipping PDF download test - no invoice ID available")
+            return True  # Don't fail the test if we don't have an invoice to download
+        
+        success, response_data = self.run_test(
+            "Download Invoice PDF (NEW FUNCTIONALITY)",
+            "GET",
+            f"invoices/{self.created_invoice_id}/download",
+            200,
+            response_type='binary'
+        )
+        
+        if success:
+            print(f"   ✅ PDF download successful, received {len(response_data)} bytes")
+            # Verify it's actually PDF-like content
+            if len(response_data) > 0:
+                print("   ✅ PDF file has content")
+            else:
+                print("   ❌ PDF file is empty")
+                return False
+        
+        return success
+
+    def test_delete_invoice(self):
+        """Test the NEW invoice deletion endpoint"""
+        if not self.created_invoice_id:
+            print("⚠️  Skipping invoice deletion test - no invoice ID available")
+            return True  # Don't fail the test if we don't have an invoice to delete
+        
+        # First, let's verify the invoice exists
+        success_check, _ = self.run_test(
+            "Verify Invoice Exists Before Deletion",
+            "GET",
+            f"invoices/{self.test_empresa_id}",
+            200
+        )
+        
+        if not success_check:
+            print("❌ Could not verify invoice exists before deletion")
+            return False
+        
+        # Now delete the invoice
+        success, response_data = self.run_test(
+            "Delete Invoice (NEW FUNCTIONALITY)",
+            "DELETE",
+            f"invoices/{self.created_invoice_id}",
+            200
+        )
+        
+        if success:
+            print("   ✅ Invoice deletion successful")
+            # Verify the invoice is actually deleted by trying to download it
+            success_verify, _ = self.run_test(
+                "Verify Invoice Deleted (Should Fail)",
+                "GET",
+                f"invoices/{self.created_invoice_id}/download",
+                404,
+                response_type='binary'
+            )
+            
+            if success_verify:
+                print("   ✅ Invoice properly deleted - download now returns 404")
+            else:
+                print("   ❌ Invoice may not have been properly deleted")
+                return False
+        
+        return success
+
+    def test_empresas_endpoints(self):
+        """Test company management endpoints"""
+        # Test getting all companies
+        success1, companies_data = self.run_test("Get All Companies", "GET", "empresas", 200)
+        
+        if success1 and companies_data:
+            print(f"   ✅ Found {len(companies_data)} companies")
+            # Check if our test company exists
+            test_company_found = any(company.get('id') == self.test_empresa_id for company in companies_data)
+            if test_company_found:
+                print(f"   ✅ Test company {self.test_empresa_id} found")
+            else:
+                print(f"   ⚠️  Test company {self.test_empresa_id} not found")
+        
+        # Test getting specific company
+        success2, _ = self.run_test("Get Specific Company", "GET", f"empresas/{self.test_empresa_id}", 200)
+        
+        return success1 and success2
+
     def test_invalid_endpoints(self):
         """Test error handling for invalid requests"""
         # Test non-existent invoice
