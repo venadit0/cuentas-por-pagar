@@ -63,6 +63,12 @@ class ResumenGeneral(BaseModel):
     facturas_pagadas: int
     proveedores: List[ResumenProveedor]
 
+class EstadoCuentaPagadas(BaseModel):
+    total_pagado: float
+    cantidad_facturas_pagadas: int
+    facturas_por_proveedor: List[ResumenProveedor]
+    facturas_pagadas: List[Invoice]
+
 
 # Helper function to prepare data for MongoDB
 def prepare_for_mongo(data):
