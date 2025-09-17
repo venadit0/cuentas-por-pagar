@@ -171,10 +171,15 @@ async def update_empresa(empresa_id: str, empresa_update: EmpresaCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.post("/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...)):
+@api_router.post("/upload-pdf/{empresa_id}")
+async def upload_pdf(empresa_id: str, file: UploadFile = File(...)):
     """Procesa un PDF y extrae datos de la factura usando Gemini 2.5 Pro"""
     try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
         # Verificar que es un PDF
         if not file.filename.endswith('.pdf'):
             raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF")
@@ -243,6 +248,7 @@ async def upload_pdf(file: UploadFile = File(...)):
                 # Crear factura en la base de datos
                 invoice_data = {
                     'id': str(uuid.uuid4()),
+                    'empresa_id': empresa_id,  # Asociar con la empresa
                     'numero_factura': str(extracted_data['numero_factura']),
                     'nombre_proveedor': str(extracted_data['nombre_proveedor']),
                     'fecha_factura': str(extracted_data['fecha_factura']),
@@ -261,6 +267,7 @@ async def upload_pdf(file: UploadFile = File(...)):
                 # Crear respuesta sin objetos datetime
                 response_data = {
                     "id": invoice_data['id'],
+                    "empresa_id": invoice_data['empresa_id'],
                     "numero_factura": invoice_data['numero_factura'],
                     "nombre_proveedor": invoice_data['nombre_proveedor'],
                     "fecha_factura": invoice_data['fecha_factura'],
