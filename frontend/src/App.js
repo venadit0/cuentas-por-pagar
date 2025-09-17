@@ -190,10 +190,11 @@ function App() {
         </div>
 
         <Tabs defaultValue="upload" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="upload">Subir PDF</TabsTrigger>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="facturas">Facturas</TabsTrigger>
+            <TabsTrigger value="pagadas">Facturas Pagadas</TabsTrigger>
             <TabsTrigger value="resumen">Resumen</TabsTrigger>
           </TabsList>
 
