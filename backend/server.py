@@ -60,6 +60,7 @@ class Invoice(BaseModel):
     archivo_pdf: Optional[str] = None
 
 class InvoiceCreate(BaseModel):
+    empresa_id: str  # Nueva relación con empresa
     numero_factura: str
     nombre_proveedor: str
     fecha_factura: str
