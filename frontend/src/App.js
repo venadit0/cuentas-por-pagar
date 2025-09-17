@@ -41,9 +41,13 @@ function App() {
   const [resumenGeneral, setResumenGeneral] = useState(null);
   const [estadoCuentaPagadas, setEstadoCuentaPagadas] = useState(null);
   const [filterEstado, setFilterEstado] = useState("todos");
+  const [filterProveedor, setFilterProveedor] = useState("");
+  
   // Estados para confirmación de eliminación
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+  
+  const { toast } = useToast();
 
   // Cargar empresas al iniciar
   useEffect(() => {
