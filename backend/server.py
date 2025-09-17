@@ -339,11 +339,17 @@ async def update_invoice_status(invoice_id: str, update: InvoiceUpdate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.get("/resumen/proveedor", response_model=List[ResumenProveedor])
-async def get_resumen_por_proveedor():
-    """Obtiene resumen de deuda agrupado por proveedor"""
+@api_router.get("/resumen/proveedor/{empresa_id}", response_model=List[ResumenProveedor])
+async def get_resumen_por_proveedor(empresa_id: str):
+    """Obtiene resumen de deuda agrupado por proveedor para una empresa"""
     try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
         pipeline = [
+            {"$match": {"empresa_id": empresa_id}},
             {
                 "$group": {
                     "_id": "$nombre_proveedor",
@@ -393,17 +399,25 @@ async def get_resumen_por_proveedor():
         result = await db.invoices.aggregate(pipeline).to_list(1000)
         return [ResumenProveedor(**item) for item in result]
         
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Error obteniendo resumen por proveedor: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.get("/resumen/general", response_model=ResumenGeneral)
-async def get_resumen_general():
-    """Obtiene resumen general de todas las deudas"""
+@api_router.get("/resumen/general/{empresa_id}", response_model=ResumenGeneral)
+async def get_resumen_general(empresa_id: str):
+    """Obtiene resumen general de todas las deudas de una empresa"""
     try:
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
         # Obtener estadísticas generales
         total_stats = await db.invoices.aggregate([
+            {"$match": {"empresa_id": empresa_id}},
             {
                 "$group": {
                     "_id": None,
@@ -440,7 +454,7 @@ async def get_resumen_general():
         ]).to_list(1)
         
         # Obtener resumen por proveedor
-        proveedores = await get_resumen_por_proveedor()
+        proveedores = await get_resumen_por_proveedor(empresa_id)
         
         stats = total_stats[0] if total_stats else {
             "total_deuda_global": 0,
@@ -457,17 +471,24 @@ async def get_resumen_general():
             proveedores=proveedores
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Error obteniendo resumen general: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.get("/estado-cuenta/pagadas", response_model=EstadoCuentaPagadas)
-async def get_estado_cuenta_pagadas():
-    """Obtiene el estado de cuenta de todas las facturas pagadas"""
+@api_router.get("/estado-cuenta/pagadas/{empresa_id}", response_model=EstadoCuentaPagadas)
+async def get_estado_cuenta_pagadas(empresa_id: str):
+    """Obtiene el estado de cuenta de todas las facturas pagadas de una empresa"""
     try:
-        # Obtener todas las facturas pagadas
-        facturas_pagadas = await db.invoices.find({"estado_pago": "pagado"}).to_list(1000)
+        # Verificar que la empresa existe
+        empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa no encontrada")
+        
+        # Obtener todas las facturas pagadas de la empresa
+        facturas_pagadas = await db.invoices.find({"empresa_id": empresa_id, "estado_pago": "pagado"}).to_list(1000)
         facturas_pagadas_obj = [Invoice(**parse_from_mongo(factura)) for factura in facturas_pagadas]
         
         # Calcular total pagado
@@ -475,7 +496,7 @@ async def get_estado_cuenta_pagadas():
         
         # Obtener resumen por proveedor solo para facturas pagadas
         pipeline_pagadas = [
-            {"$match": {"estado_pago": "pagado"}},
+            {"$match": {"empresa_id": empresa_id, "estado_pago": "pagado"}},
             {
                 "$group": {
                     "_id": "$nombre_proveedor",
@@ -507,6 +528,8 @@ async def get_estado_cuenta_pagadas():
             facturas_pagadas=facturas_pagadas_obj
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Error obteniendo estado de cuenta pagadas: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
