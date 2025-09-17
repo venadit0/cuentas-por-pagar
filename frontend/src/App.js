@@ -1191,7 +1191,17 @@ function App() {
               <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Resumen Financiero General</CardTitle>
+                    <div className="flex justify-between items-center">
+                      <CardTitle>Resumen Financiero General</CardTitle>
+                      <Button 
+                        onClick={exportResumenGeneral}
+                        variant="outline"
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        <FileSpreadsheet className="h-4 w-4 mr-2" />
+                        Exportar a Excel
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-6">
