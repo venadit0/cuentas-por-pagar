@@ -368,6 +368,29 @@ async def update_invoice_status(invoice_id: str, update: InvoiceUpdate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.put("/invoices/{invoice_id}/contrato")
+async def update_invoice_contract(invoice_id: str, update: InvoiceContractUpdate):
+    """Actualiza el número de contrato de una factura"""
+    try:
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": {"numero_contrato": update.numero_contrato}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        return {
+            "success": True, 
+            "message": "Número de contrato actualizado correctamente",
+            "numero_contrato": update.numero_contrato
+        }
+        
+    except Exception as e:
+        logging.error(f"Error actualizando número de contrato: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/invoices/{invoice_id}/download")
 async def download_invoice_pdf(invoice_id: str):
     """Descarga el archivo PDF de una factura"""
