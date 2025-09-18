@@ -1331,6 +1331,52 @@ function App() {
         </Tabs>
       </div>
       
+      {/* Dialog para editar número de contrato */}
+      <Dialog open={showContractDialog} onOpenChange={setShowContractDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileContract className="h-5 w-5" />
+              Editar Número de Contrato
+            </DialogTitle>
+            <DialogDescription>
+              Actualiza el número de contrato para la factura{" "}
+              <strong>{invoiceToEditContract?.numero_factura}</strong> del proveedor{" "}
+              <strong>{invoiceToEditContract?.nombre_proveedor}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="contract_number">Número de Contrato</Label>
+              <Input
+                id="contract_number"
+                value={contractNumber}
+                onChange={(e) => setContractNumber(e.target.value)}
+                placeholder="Ej: CT-2024-001, OC-12345, etc."
+              />
+              <p className="text-sm text-slate-500 mt-1">
+                Deja vacío si no tiene número de contrato asignado
+              </p>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowContractDialog(false)} 
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={updateContractNumber} 
+                className="flex-1"
+              >
+                Actualizar Contrato
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog de confirmación para eliminar factura */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
