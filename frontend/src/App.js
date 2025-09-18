@@ -467,8 +467,8 @@ function App() {
     }
   }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
 
-  const exportFacturasPagadas = async () => {
-    if (!selectedEmpresa) return;
+  const exportFacturasPagadas = useCallback(async () => {
+    if (!selectedEmpresa || !isMounted) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pagadas/${selectedEmpresa.id}`, {
@@ -476,37 +476,35 @@ function App() {
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      link.style.display = 'none';
+      const link = createDownloadElement(url, `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      
+      if (!link) return;
       
       document.body.appendChild(link);
       link.click();
       
-      setTimeout(() => {
-        if (link.parentNode) {
-          document.body.removeChild(link);
-        }
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      cleanupDownloadElement(link, url);
 
-      toast({
-        title: "¡Exportación exitosa!",
-        description: "Archivo Excel de facturas pagadas descargado",
-      });
+      if (isMounted) {
+        toast({
+          title: "¡Exportación exitosa!",
+          description: "Archivo Excel de facturas pagadas descargado",
+        });
+      }
     } catch (error) {
       console.error("Error exporting paid invoices:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo exportar las facturas pagadas",
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          title: "Error",
+          description: "No se pudo exportar las facturas pagadas",
+          variant: "destructive",
+        });
+      }
     }
-  };
+  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
 
-  const exportResumenGeneral = async () => {
-    if (!selectedEmpresa) return;
+  const exportResumenGeneral = useCallback(async () => {
+    if (!selectedEmpresa || !isMounted) return;
     
     try {
       const response = await axios.get(`${API}/export/resumen-general/${selectedEmpresa.id}`, {
@@ -514,34 +512,32 @@ function App() {
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      link.style.display = 'none';
+      const link = createDownloadElement(url, `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      
+      if (!link) return;
       
       document.body.appendChild(link);
       link.click();
       
-      setTimeout(() => {
-        if (link.parentNode) {
-          document.body.removeChild(link);
-        }
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      cleanupDownloadElement(link, url);
 
-      toast({
-        title: "¡Exportación exitosa!",
-        description: "Archivo Excel de resumen general descargado",
-      });
+      if (isMounted) {
+        toast({
+          title: "¡Exportación exitosa!",
+          description: "Archivo Excel de resumen general descargado",
+        });
+      }
     } catch (error) {
       console.error("Error exporting general summary:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo exportar el resumen general",
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          title: "Error",
+          description: "No se pudo exportar el resumen general",
+          variant: "destructive",
+        });
+      }
     }
-  };
+  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
 
   // ===== FUNCIONES DE GESTIÓN DE EMPRESAS =====
   const openEditEmpresa = (empresa) => {
