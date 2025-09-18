@@ -1129,7 +1129,7 @@ function App() {
                       </TableHeader>
                       <TableBody>
                         {estadoCuentaPagadas.facturas_pagadas.map((factura) => (
-                          <TableRow key={factura.id}>
+                          <TableRow key={`factura-pagada-${factura.id}`}>
                             <TableCell className="font-medium">
                               {factura.numero_factura}
                             </TableCell>
