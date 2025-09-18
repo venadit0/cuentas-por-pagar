@@ -77,7 +77,7 @@ def create_invoices_excel(invoices, estado_filter, empresa_nombre):
         ws.cell(row=row, column=7, value=invoice.get('archivo_original', invoice.get('archivo_pdf', 'N/A')))
     
     # Ajustar ancho de columnas
-    column_widths = [18, 25, 15, 15, 15, 20]
+    column_widths = [18, 20, 25, 15, 15, 15, 20]
     for col, width in enumerate(column_widths, 1):
         ws.column_dimensions[chr(64 + col)].width = width
     
