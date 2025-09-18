@@ -1146,6 +1146,7 @@ function App() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nº Factura</TableHead>
+                      <TableHead>Nº Contrato</TableHead>
                       <TableHead>Proveedor</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Monto</TableHead>
