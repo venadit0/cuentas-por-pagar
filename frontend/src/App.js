@@ -65,7 +65,24 @@ function App() {
     email: ""
   });
   
+  // Estado para controlar el montaje del componente
+  const [isMounted, setIsMounted] = useState(true);
+  
   const { toast } = useToast();
+
+  // Effect para cleanup al desmontar
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  // Safe state setter que verifica si el componente está montado
+  const safeSetState = useCallback((setter, value) => {
+    if (isMounted) {
+      setter(value);
+    }
+  }, [isMounted]);
 
   // Cargar empresas al iniciar
   useEffect(() => {
