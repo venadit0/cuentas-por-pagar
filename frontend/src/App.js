@@ -1375,7 +1375,7 @@ function App() {
                       <div className="space-y-4">
                         {resumenGeneral.proveedores.map((proveedor, index) => (
                           <div 
-                            key={index}
+                            key={`resumen-proveedor-${proveedor.proveedor}-${index}`}
                             className="flex justify-between items-center p-4 border rounded-lg"
                           >
                             <div>
