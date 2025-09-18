@@ -431,45 +431,41 @@ function App() {
   };
 
   // ===== FUNCIONES DE EXPORTACIÓN A EXCEL =====
-  const exportFacturasPendientes = async () => {
-    if (!selectedEmpresa) return;
+  const exportFacturasPendientes = useCallback(async () => {
+    if (!selectedEmpresa || !isMounted) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pendientes/${selectedEmpresa.id}`, {
         responseType: 'blob'
       });
 
-      // Crear descarga de forma segura
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      link.style.display = 'none';
+      const link = createDownloadElement(url, `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      
+      if (!link) return;
       
       document.body.appendChild(link);
       link.click();
       
-      // Limpiar de forma asíncrona
-      setTimeout(() => {
-        if (link.parentNode) {
-          document.body.removeChild(link);
-        }
-        window.URL.revokeObjectURL(url);
-      }, 100);
+      cleanupDownloadElement(link, url);
 
-      toast({
-        title: "¡Exportación exitosa!",
-        description: "Archivo Excel de facturas pendientes descargado",
-      });
+      if (isMounted) {
+        toast({
+          title: "¡Exportación exitosa!",
+          description: "Archivo Excel de facturas pendientes descargado",
+        });
+      }
     } catch (error) {
       console.error("Error exporting pending invoices:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo exportar las facturas pendientes",
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          title: "Error",
+          description: "No se pudo exportar las facturas pendientes",
+          variant: "destructive",
+        });
+      }
     }
-  };
+  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
 
   const exportFacturasPagadas = async () => {
     if (!selectedEmpresa) return;
