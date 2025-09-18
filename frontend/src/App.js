@@ -376,14 +376,23 @@ function App() {
         responseType: 'blob'
       });
 
+      // Crear descarga de forma segura
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      
+      // Limpiar de forma asíncrona
+      setTimeout(() => {
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
       toast({
         title: "¡Exportación exitosa!",
@@ -411,10 +420,17 @@ function App() {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      
+      setTimeout(() => {
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
       toast({
         title: "¡Exportación exitosa!",
@@ -442,10 +458,17 @@ function App() {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      
+      setTimeout(() => {
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
       toast({
         title: "¡Exportación exitosa!",
