@@ -57,23 +57,24 @@ def create_invoices_excel(invoices, estado_filter, empresa_nombre):
     # Datos de facturas (desde fila 6)
     for row, invoice in enumerate(invoices, 6):
         ws.cell(row=row, column=1, value=invoice.get('numero_factura', ''))
-        ws.cell(row=row, column=2, value=invoice.get('nombre_proveedor', ''))
+        ws.cell(row=row, column=2, value=invoice.get('numero_contrato', '') or 'Sin asignar')
+        ws.cell(row=row, column=3, value=invoice.get('nombre_proveedor', ''))
         
         # Formatear fecha
         fecha_str = invoice.get('fecha_factura', '')
         if fecha_str:
             try:
                 fecha_obj = datetime.fromisoformat(fecha_str.replace('Z', '+00:00')) if 'T' in fecha_str else datetime.strptime(fecha_str, '%Y-%m-%d')
-                ws.cell(row=row, column=3, value=fecha_obj.strftime('%d/%m/%Y'))
+                ws.cell(row=row, column=4, value=fecha_obj.strftime('%d/%m/%Y'))
             except:
-                ws.cell(row=row, column=3, value=fecha_str)
+                ws.cell(row=row, column=4, value=fecha_str)
         
         # Formatear monto
         monto = invoice.get('monto', 0)
-        ws.cell(row=row, column=4, value=f"${monto:,.2f}")
+        ws.cell(row=row, column=5, value=f"${monto:,.2f}")
         
-        ws.cell(row=row, column=5, value=invoice.get('estado_pago', '').title())
-        ws.cell(row=row, column=6, value=invoice.get('archivo_original', invoice.get('archivo_pdf', 'N/A')))
+        ws.cell(row=row, column=6, value=invoice.get('estado_pago', '').title())
+        ws.cell(row=row, column=7, value=invoice.get('archivo_original', invoice.get('archivo_pdf', 'N/A')))
     
     # Ajustar ancho de columnas
     column_widths = [18, 25, 15, 15, 15, 20]
