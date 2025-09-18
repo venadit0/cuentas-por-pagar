@@ -1336,7 +1336,7 @@ function App() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FileContract className="h-5 w-5" />
+              <File className="h-5 w-5" />
               Editar Número de Contrato
             </DialogTitle>
             <DialogDescription>
