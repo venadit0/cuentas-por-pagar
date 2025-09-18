@@ -76,6 +76,9 @@ class InvoiceCreate(BaseModel):
 class InvoiceUpdate(BaseModel):
     estado_pago: str
 
+class InvoiceContractUpdate(BaseModel):
+    numero_contrato: Optional[str] = None
+
 class ResumenProveedor(BaseModel):
     proveedor: str
     total_deuda: float
