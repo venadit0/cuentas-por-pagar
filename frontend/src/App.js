@@ -1233,7 +1233,7 @@ function App() {
                   </TableHeader>
                   <TableBody>
                     {filteredInvoices.map((invoice) => (
-                      <TableRow key={invoice.id}>
+                      <TableRow key={`invoice-${invoice.id}`}>
                         <TableCell className="font-medium">
                           {invoice.numero_factura}
                         </TableCell>
