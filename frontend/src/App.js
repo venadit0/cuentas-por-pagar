@@ -337,6 +337,11 @@ function App() {
   };
 
   const confirmDeleteInvoice = (invoice) => {
+    // Cerrar otros diálogos antes de abrir este
+    setShowContractDialog(false);
+    setShowEditEmpresaDialog(false);
+    setShowDeleteEmpresaDialog(false);
+    
     setInvoiceToDelete(invoice);
     setShowDeleteDialog(true);
   };
