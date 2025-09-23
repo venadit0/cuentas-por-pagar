@@ -17,6 +17,57 @@ import { Toaster } from "./components/ui/sonner";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Hook personalizado para manejar descargas de forma segura
+const useDownload = () => {
+  const downloadRef = useRef(null);
+  
+  const download = useCallback((blob, filename) => {
+    // Cleanup previous download if exists
+    if (downloadRef.current) {
+      try {
+        URL.revokeObjectURL(downloadRef.current.url);
+      } catch (e) {
+        console.warn('URL cleanup warning:', e);
+      }
+    }
+    
+    // Create new download
+    const url = URL.createObjectURL(blob);
+    downloadRef.current = { url };
+    
+    // Use modern download approach
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    link.download = filename;
+    
+    // Add to DOM briefly and trigger download
+    document.body.appendChild(link);
+    link.click();
+    
+    // Immediate cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    downloadRef.current = null;
+    
+  }, []);
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (downloadRef.current) {
+        try {
+          URL.revokeObjectURL(downloadRef.current.url);
+        } catch (e) {
+          console.warn('Final cleanup warning:', e);
+        }
+      }
+    };
+  }, []);
+  
+  return download;
+};
+
 function App() {
   // Estados principales
   const [currentView, setCurrentView] = useState("empresas"); // "empresas" o "empresa-detail"
