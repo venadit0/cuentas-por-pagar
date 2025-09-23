@@ -69,6 +69,9 @@ const useDownload = () => {
 };
 
 function App() {
+  // Hook para descargas seguras
+  const downloadFile = useDownload();
+  
   // Estados principales
   const [currentView, setCurrentView] = useState("empresas"); // "empresas" o "empresa-detail"
   const [selectedEmpresa, setSelectedEmpresa] = useState(null);
@@ -116,76 +119,18 @@ function App() {
     email: ""
   });
   
-  // Estado para controlar el montaje del componente
-  const [isMounted, setIsMounted] = useState(true);
+  // Refs para control de montaje
+  const isMountedRef = useRef(true);
   
   const { toast } = useToast();
 
-  // Effect para cleanup al desmontar
+  // Cleanup al desmontar
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
-      setIsMounted(false);
-      
-      // Cleanup global de elementos de descarga huérfanos
-      const downloadElements = document.querySelectorAll('[data-react-download="true"]');
-      downloadElements.forEach(element => {
-        try {
-          if (element.parentNode) {
-            element.parentNode.removeChild(element);
-          }
-        } catch (error) {
-          console.warn('Global cleanup warning:', error);
-        }
-      });
+      isMountedRef.current = false;
     };
   }, []);
-
-  // Safe state setter que verifica si el componente está montado
-  const safeSetState = useCallback((setter, value) => {
-    if (isMounted) {
-      setter(value);
-    }
-  }, [isMounted]);
-
-  // Función segura para crear y gestionar elementos de descarga
-  const createDownloadElement = useCallback((url, filename) => {
-    if (!isMounted) return null;
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.style.display = 'none';
-    link.setAttribute('data-react-download', 'true'); // Marcador para identificar elementos
-    
-    return link;
-  }, [isMounted]);
-
-  // Función segura para limpiar elementos de descarga
-  const cleanupDownloadElement = useCallback((link, url) => {
-    if (!link) return;
-    
-    const cleanup = () => {
-      try {
-        if (link && link.parentNode && document.body.contains(link)) {
-          document.body.removeChild(link);
-        }
-        if (url) {
-          window.URL.revokeObjectURL(url);
-        }
-      } catch (error) {
-        console.warn('Cleanup warning:', error);
-      }
-    };
-    
-    // Cleanup inmediato si el componente no está montado
-    if (!isMounted) {
-      cleanup();
-      return;
-    }
-    
-    // Cleanup con delay para React
-    setTimeout(cleanup, 100);
-  }, [isMounted]);
 
   // Cargar empresas al iniciar
   useEffect(() => {
