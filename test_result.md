@@ -107,15 +107,18 @@ user_problem_statement: "Critical persistent 'removeChild' DOM error in React fr
 backend:
   - task: "PDF upload and processing with Gemini AI"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Backend API endpoints are functional - issue is frontend-only"
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: PDF upload fails with Gemini AI error 'The document has no pages'. Test PDF files are being rejected by Gemini API. This blocks core functionality of invoice processing."
 
   - task: "Multi-company management API"
     implemented: true
@@ -128,6 +131,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Company CRUD operations working properly"
+      - working: true
+        agent: "testing"
+        comment: "VERIFIED: All company management endpoints working perfectly. GET /api/empresas (✅), POST /api/empresas (✅), PUT /api/empresas/{id} (✅), DELETE /api/empresas/{id} (✅). Soft delete functionality confirmed working."
 
   - task: "Excel export functionality"
     implemented: true
@@ -140,6 +146,45 @@ backend:
       - working: true
         agent: "main"
         comment: "Backend export endpoints functioning correctly"
+      - working: true
+        agent: "testing"
+        comment: "VERIFIED: All Excel export endpoints working perfectly. GET /api/export/facturas-pendientes/{id} (✅), GET /api/export/facturas-pagadas/{id} (✅), GET /api/export/resumen-general/{id} (✅). All return proper Excel files with correct Content-Type headers."
+
+  - task: "Invoice management API endpoints"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "VERIFIED: All invoice management endpoints working correctly. GET /api/invoices/{empresa_id} (✅), PUT /api/invoices/{id}/estado (✅), PUT /api/invoices/{id}/contrato (✅), GET /api/invoices/{id}/download (✅), DELETE /api/invoices/{id} (✅). PDF downloads return proper application/pdf content."
+
+  - task: "Summary and reports API endpoints"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "VERIFIED: All summary endpoints working correctly. GET /api/resumen/general/{empresa_id} (✅), GET /api/estado-cuenta/pagadas/{empresa_id} (✅), GET /api/resumen/proveedor/{empresa_id} (✅). All return proper JSON responses with correct data structure."
+
+  - task: "Error handling and validation"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Minor: Error handling inconsistent. Some endpoints return 500 instead of 404 for non-existent resources (e.g., updating non-existent invoice returns 500 with '404: Factura no encontrada' message instead of proper 404 status). Core functionality works but error responses need standardization."
 
 frontend:
   - task: "Fix persistent removeChild DOM error"
