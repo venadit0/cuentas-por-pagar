@@ -375,24 +375,16 @@ function App() {
   };
 
   const downloadInvoicePDF = useCallback(async (invoiceId, numeroFactura) => {
-    if (!isMounted) return;
+    if (!isMountedRef.current) return;
     
     try {
       const response = await axios.get(`${API}/invoices/${invoiceId}/download`, {
         responseType: 'blob'
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = createDownloadElement(url, `factura_${numeroFactura}.pdf`);
-      
-      if (!link) return;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      cleanupDownloadElement(link, url);
+      downloadFile(response.data, `factura_${numeroFactura}.pdf`);
 
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "¡Descarga iniciada!",
           description: `PDF de la factura ${numeroFactura} descargado`,
@@ -400,7 +392,7 @@ function App() {
       }
     } catch (error) {
       console.error("Error downloading PDF:", error);
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "Error",
           description: "No se pudo descargar el PDF de la factura",
@@ -408,7 +400,7 @@ function App() {
         });
       }
     }
-  }, [isMounted, createDownloadElement, cleanupDownloadElement, toast]);
+  }, [downloadFile, toast]);
 
   const confirmDeleteInvoice = (invoice) => {
     // Cerrar otros diálogos antes de abrir este
