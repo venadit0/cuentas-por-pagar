@@ -440,24 +440,16 @@ function App() {
 
   // ===== FUNCIONES DE EXPORTACIÓN A EXCEL =====
   const exportFacturasPendientes = useCallback(async () => {
-    if (!selectedEmpresa || !isMounted) return;
+    if (!selectedEmpresa || !isMountedRef.current) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pendientes/${selectedEmpresa.id}`, {
         responseType: 'blob'
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = createDownloadElement(url, `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      
-      if (!link) return;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      cleanupDownloadElement(link, url);
+      downloadFile(response.data, `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "¡Exportación exitosa!",
           description: "Archivo Excel de facturas pendientes descargado",
@@ -465,7 +457,7 @@ function App() {
       }
     } catch (error) {
       console.error("Error exporting pending invoices:", error);
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "Error",
           description: "No se pudo exportar las facturas pendientes",
@@ -473,27 +465,19 @@ function App() {
         });
       }
     }
-  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
+  }, [selectedEmpresa, downloadFile, toast]);
 
   const exportFacturasPagadas = useCallback(async () => {
-    if (!selectedEmpresa || !isMounted) return;
+    if (!selectedEmpresa || !isMountedRef.current) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pagadas/${selectedEmpresa.id}`, {
         responseType: 'blob'
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = createDownloadElement(url, `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      
-      if (!link) return;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      cleanupDownloadElement(link, url);
+      downloadFile(response.data, `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "¡Exportación exitosa!",
           description: "Archivo Excel de facturas pagadas descargado",
@@ -501,7 +485,7 @@ function App() {
       }
     } catch (error) {
       console.error("Error exporting paid invoices:", error);
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "Error",
           description: "No se pudo exportar las facturas pagadas",
@@ -509,27 +493,19 @@ function App() {
         });
       }
     }
-  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
+  }, [selectedEmpresa, downloadFile, toast]);
 
   const exportResumenGeneral = useCallback(async () => {
-    if (!selectedEmpresa || !isMounted) return;
+    if (!selectedEmpresa || !isMountedRef.current) return;
     
     try {
       const response = await axios.get(`${API}/export/resumen-general/${selectedEmpresa.id}`, {
         responseType: 'blob'
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = createDownloadElement(url, `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
-      
-      if (!link) return;
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      cleanupDownloadElement(link, url);
+      downloadFile(response.data, `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "¡Exportación exitosa!",
           description: "Archivo Excel de resumen general descargado",
@@ -537,7 +513,7 @@ function App() {
       }
     } catch (error) {
       console.error("Error exporting general summary:", error);
-      if (isMounted) {
+      if (isMountedRef.current) {
         toast({
           title: "Error",
           description: "No se pudo exportar el resumen general",
@@ -545,7 +521,7 @@ function App() {
         });
       }
     }
-  }, [selectedEmpresa, isMounted, createDownloadElement, cleanupDownloadElement, toast]);
+  }, [selectedEmpresa, downloadFile, toast]);
 
   // ===== FUNCIONES DE GESTIÓN DE EMPRESAS =====
   const openEditEmpresa = (empresa) => {
