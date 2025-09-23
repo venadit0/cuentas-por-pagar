@@ -69,7 +69,7 @@ const useSecureDownload = () => {
 
 function App() {
   // Hook para descargas seguras
-  const downloadFile = useDownload();
+  const downloadFile = useSecureDownload();
   
   // Estados principales
   const [currentView, setCurrentView] = useState("empresas"); // "empresas" o "empresa-detail"
