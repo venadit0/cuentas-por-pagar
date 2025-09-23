@@ -424,8 +424,8 @@ function App() {
   };
 
   // ===== FUNCIONES DE EXPORTACIÓN A EXCEL =====
-  const exportFacturasPendientes = useCallback(async () => {
-    if (!selectedEmpresa || !isMountedRef.current) return;
+  const exportFacturasPendientes = async () => {
+    if (!selectedEmpresa) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pendientes/${selectedEmpresa.id}`, {
@@ -434,26 +434,22 @@ function App() {
 
       downloadFile(response.data, `facturas_pendientes_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMountedRef.current) {
-        toast({
-          title: "¡Exportación exitosa!",
-          description: "Archivo Excel de facturas pendientes descargado",
-        });
-      }
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de facturas pendientes descargado",
+      });
     } catch (error) {
       console.error("Error exporting pending invoices:", error);
-      if (isMountedRef.current) {
-        toast({
-          title: "Error",
-          description: "No se pudo exportar las facturas pendientes",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: "No se pudo exportar las facturas pendientes",
+        variant: "destructive",
+      });
     }
-  }, [selectedEmpresa, downloadFile, toast]);
+  };
 
-  const exportFacturasPagadas = useCallback(async () => {
-    if (!selectedEmpresa || !isMountedRef.current) return;
+  const exportFacturasPagadas = async () => {
+    if (!selectedEmpresa) return;
     
     try {
       const response = await axios.get(`${API}/export/facturas-pagadas/${selectedEmpresa.id}`, {
@@ -462,26 +458,22 @@ function App() {
 
       downloadFile(response.data, `facturas_pagadas_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMountedRef.current) {
-        toast({
-          title: "¡Exportación exitosa!",
-          description: "Archivo Excel de facturas pagadas descargado",
-        });
-      }
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de facturas pagadas descargado",
+      });
     } catch (error) {
       console.error("Error exporting paid invoices:", error);
-      if (isMountedRef.current) {
-        toast({
-          title: "Error",
-          description: "No se pudo exportar las facturas pagadas",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: "No se pudo exportar las facturas pagadas",
+        variant: "destructive",
+      });
     }
-  }, [selectedEmpresa, downloadFile, toast]);
+  };
 
-  const exportResumenGeneral = useCallback(async () => {
-    if (!selectedEmpresa || !isMountedRef.current) return;
+  const exportResumenGeneral = async () => {
+    if (!selectedEmpresa) return;
     
     try {
       const response = await axios.get(`${API}/export/resumen-general/${selectedEmpresa.id}`, {
@@ -490,23 +482,19 @@ function App() {
 
       downloadFile(response.data, `resumen_general_${selectedEmpresa.nombre.replace(/\s+/g, '_')}.xlsx`);
 
-      if (isMountedRef.current) {
-        toast({
-          title: "¡Exportación exitosa!",
-          description: "Archivo Excel de resumen general descargado",
-        });
-      }
+      toast({
+        title: "¡Exportación exitosa!",
+        description: "Archivo Excel de resumen general descargado",
+      });
     } catch (error) {
       console.error("Error exporting general summary:", error);
-      if (isMountedRef.current) {
-        toast({
-          title: "Error",
-          description: "No se pudo exportar el resumen general",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: "No se pudo exportar el resumen general",
+        variant: "destructive",
+      });
     }
-  }, [selectedEmpresa, downloadFile, toast]);
+  };
 
   // ===== FUNCIONES DE GESTIÓN DE EMPRESAS =====
   const openEditEmpresa = (empresa) => {
