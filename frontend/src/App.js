@@ -620,7 +620,7 @@ function App() {
     }
   };
 
-  // ===== FUNCIONES DE NÚMERO DE CONTRATO =====
+
   const openContractDialog = (invoice) => {
     // Cerrar otros diálogos antes de abrir este
     setShowDeleteDialog(false);
