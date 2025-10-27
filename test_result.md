@@ -107,9 +107,9 @@ user_problem_statement: "Critical persistent 'removeChild' DOM error in React fr
 backend:
   - task: "PDF upload and processing with Gemini AI"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -119,6 +119,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "CRITICAL: PDF upload fails with Gemini AI error 'The document has no pages'. Test PDF files are being rejected by Gemini API. This blocks core functionality of invoice processing."
+      - working: true
+        agent: "testing"
+        comment: "FIXED: Gemini model successfully updated from gemini-1.5-flash to gemini-2.0-flash. Backend service restarted to apply changes. Comprehensive testing completed - ALL SUCCESS CRITERIA MET: ✅ PDF upload completes without errors ✅ Gemini AI successfully processes PDF and extracts data (numero_factura, nombre_proveedor, fecha_factura, monto) ✅ Invoice data correctly saved to database ✅ No 404 model errors in logs ✅ Files properly stored in /app/uploads/ and accessible ✅ Complete end-to-end flow working (Upload → Gemini Processing → Database Storage). PDF processing with Gemini AI integration is now fully functional."
 
   - task: "Multi-company management API"
     implemented: true
