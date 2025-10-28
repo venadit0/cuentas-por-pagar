@@ -191,9 +191,13 @@ const CompanyManager = ({
     setShowPasswordDialog(true);
   };
 
-  const handlePasswordConfirm = () => {
+  const handlePasswordConfirm = async () => {
     if (pendingAction) {
-      pendingAction();
+      try {
+        await pendingAction();
+      } catch (error) {
+        console.error('Error in pending action:', error);
+      }
       setPendingAction(null);
     }
   };
