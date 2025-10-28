@@ -542,9 +542,17 @@ const InvoiceManager = ({
 
   const handleDeleteInvoice = async () => {
     if (!deletingInvoice) return;
-    await onDeleteInvoice(deletingInvoice.id);
+    // Primer paso: cerrar diálogo de confirmación y abrir diálogo de contraseña
     setShowDeleteInvoice(false);
-    setDeletingInvoice(null);
+    setPendingAction(() => async () => {
+      await onDeleteInvoice(deletingInvoice.id);
+      setDeletingInvoice(null);
+    });
+    setPasswordDialogInfo({
+      title: "Eliminar Factura",
+      description: `Se eliminará permanentemente la factura "${deletingInvoice.numero_factura}" de "${deletingInvoice.nombre_proveedor}" y su archivo PDF asociado.`
+    });
+    setShowPasswordDialog(true);
   };
 
   const openComprobanteUpload = (invoice) => {
