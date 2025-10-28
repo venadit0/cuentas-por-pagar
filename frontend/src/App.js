@@ -503,6 +503,8 @@ const InvoiceManager = ({
   onUploadComprobante,
   onDownloadComprobante,
   onDeleteComprobante,
+  onUploadXml,
+  onDownloadXml,
   onExportPendientes,
   onExportPagadas,
   onExportResumen
