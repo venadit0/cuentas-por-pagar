@@ -1293,6 +1293,19 @@ function App() {
       toast({ title: "Error", description: "No se pudo descargar el comprobante", variant: "destructive" });
     }
   };
+  const deleteComprobante = async (invoiceId) => {
+    try {
+      await axios.delete(`${API}/invoices/${invoiceId}/delete-comprobante`);
+      toast({ title: "Eliminado", description: "Comprobante eliminado correctamente" });
+      loadInvoices(); // Refresh invoice list to remove comprobante icon
+    } catch (error) {
+      toast({ 
+        title: "Error", 
+        description: error.response?.data?.detail || "No se pudo eliminar el comprobante",
+        variant: "destructive" 
+      });
+    }
+  };
 
   // Download functions using the safe download hook
   const downloadPDF = async (invoiceId, numeroFactura) => {
