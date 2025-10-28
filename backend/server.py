@@ -399,6 +399,52 @@ async def update_invoice_contract(invoice_id: str, update: InvoiceContractUpdate
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.put("/invoices/{invoice_id}/proveedor")
+async def update_invoice_provider(invoice_id: str, update: InvoiceProviderUpdate):
+    """Actualiza el nombre del proveedor de una factura"""
+    try:
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": {"nombre_proveedor": update.nombre_proveedor}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        return {
+            "success": True, 
+            "message": "Nombre del proveedor actualizado correctamente",
+            "nombre_proveedor": update.nombre_proveedor
+        }
+        
+    except Exception as e:
+        logging.error(f"Error actualizando nombre del proveedor: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.put("/invoices/{invoice_id}/numero")
+async def update_invoice_number(invoice_id: str, update: InvoiceNumberUpdate):
+    """Actualiza el número de factura"""
+    try:
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": {"numero_factura": update.numero_factura}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        return {
+            "success": True, 
+            "message": "Número de factura actualizado correctamente",
+            "numero_factura": update.numero_factura
+        }
+        
+    except Exception as e:
+        logging.error(f"Error actualizando número de factura: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/invoices/{invoice_id}/upload-comprobante")
 async def upload_comprobante_pago(invoice_id: str, file: UploadFile = File(...)):
     """Sube un comprobante de pago para una factura"""
