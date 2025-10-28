@@ -591,8 +591,29 @@ const InvoiceManager = ({
 
   const handleDeleteComprobante = async () => {
     if (!deletingComprobante) return;
-    await onDeleteComprobante(deletingComprobante.id);
+    // Primer paso: cerrar diálogo de confirmación y abrir diálogo de contraseña
     setShowDeleteComprobante(false);
+    setPendingAction(() => async () => {
+      await onDeleteComprobante(deletingComprobante.id);
+      setDeletingComprobante(null);
+    });
+    setPasswordDialogInfo({
+      title: "Eliminar Comprobante de Pago",
+      description: `Se eliminará permanentemente el comprobante de pago de la factura "${deletingComprobante.numero_factura}".`
+    });
+    setShowPasswordDialog(true);
+  };
+
+  const handlePasswordConfirm = async () => {
+    if (pendingAction) {
+      await pendingAction();
+      setPendingAction(null);
+    }
+  };
+
+  const handlePasswordCancel = () => {
+    setPendingAction(null);
+    setDeletingInvoice(null);
     setDeletingComprobante(null);
   };
 
