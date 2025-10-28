@@ -309,7 +309,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Fix persistent removeChild DOM error"
+    - "Payment receipt upload functionality (comprobante de pago)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
