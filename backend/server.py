@@ -102,6 +102,12 @@ class EstadoCuentaPagadas(BaseModel):
     facturas_por_proveedor: List[ResumenProveedor]
     facturas_pagadas: List[Invoice]
 
+class InvoiceProviderUpdate(BaseModel):
+    nombre_proveedor: str
+
+class InvoiceNumberUpdate(BaseModel):
+    numero_factura: str
+
 
 # Helper function to prepare data for MongoDB
 def prepare_for_mongo(data):
