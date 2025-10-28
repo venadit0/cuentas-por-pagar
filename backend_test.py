@@ -1127,7 +1127,8 @@ class InvoiceAPITester:
 
     def test_xml_file_cleanup_on_deletion(self):
         """Test that XML files are cleaned up when invoice is deleted"""
-        if not self.created_invoice_id:
+        invoice_id = self.created_invoice_id or self.existing_invoice_id
+        if not invoice_id:
             print("⚠️  Skipping XML cleanup test - no invoice ID available")
             return True
         
