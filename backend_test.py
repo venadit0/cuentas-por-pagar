@@ -1694,6 +1694,18 @@ def main():
     print("\n🧹 Testing XML File Cleanup on Deletion...")
     tester.test_xml_file_cleanup_on_deletion()
     
+    print("\n✏️ Testing NEW Edit Provider Name Functionality...")
+    tester.test_update_provider_name()
+    
+    print("\n✏️ Testing NEW Edit Invoice Number Functionality...")
+    tester.test_update_invoice_number()
+    
+    print("\n❌ Testing Edit Functionality Error Cases...")
+    tester.test_edit_functionality_error_cases()
+    
+    print("\n🔗 Testing Edit Functionality Integration...")
+    tester.test_edit_functionality_integration()
+    
     # Print final results
     print("\n" + "=" * 50)
     print(f"📊 FINAL RESULTS:")
