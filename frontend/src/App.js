@@ -719,15 +719,26 @@ const InvoiceManager = ({
                               </Button>
                             )}
                             {inv.comprobante_pago && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onDownloadComprobante(inv.id, inv.numero_factura)}
-                                className="text-green-600"
-                                title="Descargar Comprobante de Pago"
-                              >
-                                <Receipt className="h-4 w-4" />
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => onDownloadComprobante(inv.id, inv.numero_factura)}
+                                  className="text-green-600"
+                                  title="Descargar Comprobante de Pago"
+                                >
+                                  <Receipt className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openDeleteComprobante(inv)}
+                                  className="text-red-500"
+                                  title="Eliminar Comprobante de Pago"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
                             )}
                             <Button
                               size="sm"
