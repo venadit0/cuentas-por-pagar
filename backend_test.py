@@ -1211,7 +1211,7 @@ class InvoiceAPITester:
                 success1, upload_response = self.run_test(
                     "XML Workflow Step 1: Upload XML",
                     "POST",
-                    f"invoices/{self.created_invoice_id}/upload-xml",
+                    f"invoices/{invoice_id}/upload-xml",
                     200,
                     files=files
                 )
