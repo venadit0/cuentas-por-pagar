@@ -326,6 +326,8 @@ const InvoiceManager = ({
   onUpdateContract,
   onDeleteInvoice,
   onDownloadPDF,
+  onUploadComprobante,
+  onDownloadComprobante,
   onExportPendientes,
   onExportPagadas,
   onExportResumen
