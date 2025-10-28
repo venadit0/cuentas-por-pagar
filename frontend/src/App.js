@@ -1892,6 +1892,8 @@ function App() {
         onUploadPDF={uploadPDF}
         onUpdateInvoiceStatus={updateInvoiceStatus}
         onUpdateContract={updateContract}
+        onUpdateProvider={updateProvider}
+        onUpdateInvoiceNumber={updateInvoiceNumber}
         onDeleteInvoice={deleteInvoice}
         onDownloadPDF={downloadPDF}
         onUploadComprobante={uploadComprobante}
