@@ -688,6 +688,35 @@ const InvoiceManager = ({
     setDeletingComprobante(null);
   };
 
+  const openXmlUpload = (invoice) => {
+    setUploadingXmlInvoice(invoice);
+    setXmlFile(null);
+    setShowXmlUpload(true);
+  };
+
+  const handleXmlFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file && file.name.toLowerCase().endsWith('.xml')) {
+      setXmlFile(file);
+    } else {
+      toast({ title: "Error", description: "Selecciona un archivo XML válido", variant: "destructive" });
+    }
+  };
+
+  const handleUploadXml = async () => {
+    if (!xmlFile || !uploadingXmlInvoice) return;
+    
+    setUploadingXml(true);
+    try {
+      await onUploadXml(uploadingXmlInvoice.id, xmlFile);
+      setShowXmlUpload(false);
+      setUploadingXmlInvoice(null);
+      setXmlFile(null);
+    } finally {
+      setUploadingXml(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
