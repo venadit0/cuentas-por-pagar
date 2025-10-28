@@ -510,6 +510,52 @@ async def download_comprobante_pago(invoice_id: str):
         raise HTTPException(status_code=500, detail=f"Error descargando el comprobante: {str(e)}")
 
 
+@api_router.delete("/invoices/{invoice_id}/delete-comprobante")
+async def delete_comprobante_pago(invoice_id: str):
+    """Elimina el comprobante de pago de una factura"""
+    try:
+        # Buscar la factura en la base de datos
+        invoice = await db.invoices.find_one({"id": invoice_id})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        # Verificar que tiene comprobante de pago
+        if not invoice.get('comprobante_pago'):
+            raise HTTPException(status_code=404, detail="No hay comprobante de pago asociado a esta factura")
+        
+        # Eliminar el archivo del servidor si existe
+        file_path = f"/app/uploads/{invoice['comprobante_pago']}"
+        if os.path.exists(file_path):
+            try:
+                os.unlink(file_path)
+                logging.info(f"Comprobante eliminado del servidor: {file_path}")
+            except Exception as e:
+                logging.warning(f"No se pudo eliminar el archivo del comprobante: {str(e)}")
+        
+        # Actualizar la factura para remover la información del comprobante
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$unset": {
+                "comprobante_pago": "",
+                "comprobante_original": ""
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        return {
+            "success": True,
+            "message": "Comprobante de pago eliminado correctamente"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error eliminando comprobante: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error eliminando el comprobante: {str(e)}")
+
+
 @api_router.delete("/invoices/{invoice_id}")
 async def delete_invoice(invoice_id: str):
     """Elimina una factura y su archivo PDF asociado"""
