@@ -677,8 +677,20 @@ def main():
     print("\n📥 Testing NEW PDF Download Functionality...")
     tester.test_download_invoice_pdf()
     
+    print("\n📎 Testing NEW Comprobante Upload Functionality...")
+    tester.test_comprobante_upload()
+    
+    print("\n📥 Testing NEW Comprobante Download Functionality...")
+    tester.test_comprobante_download()
+    
+    print("\n📋 Testing Invoice Listing with Comprobante Fields...")
+    tester.test_invoice_with_comprobante_fields()
+    
     print("\n🗑️  Testing NEW Invoice Deletion Functionality...")
     tester.test_delete_invoice()
+    
+    print("\n🧹 Testing Comprobante File Cleanup on Deletion...")
+    tester.test_comprobante_file_cleanup_on_deletion()
     
     print("\n📊 Testing NEW Excel Export Functionality...")
     tester.test_excel_export_endpoints()
@@ -688,6 +700,9 @@ def main():
     
     print("\n❌ Testing Error Handling...")
     tester.test_invalid_endpoints()
+    
+    print("\n🚫 Testing Comprobante Error Cases...")
+    tester.test_comprobante_error_cases()
     
     # Print final results
     print("\n" + "=" * 50)
