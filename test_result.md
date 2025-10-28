@@ -321,7 +321,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Payment receipt upload functionality (comprobante de pago)"
+    - "DELETE comprobante functionality"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
