@@ -328,6 +328,7 @@ const InvoiceManager = ({
   onDownloadPDF,
   onUploadComprobante,
   onDownloadComprobante,
+  onDeleteComprobante,
   onExportPendientes,
   onExportPagadas,
   onExportResumen
