@@ -970,14 +970,15 @@ class InvoiceAPITester:
 
     def test_xml_download(self):
         """Test NEW XML download functionality"""
-        if not self.created_invoice_id:
+        invoice_id = self.created_invoice_id or self.existing_invoice_id
+        if not invoice_id:
             print("⚠️  Skipping XML download test - no invoice ID available")
             return True
         
         success, response_data = self.run_test(
             "Download XML File (NEW FUNCTIONALITY)",
             "GET",
-            f"invoices/{self.created_invoice_id}/download-xml",
+            f"invoices/{invoice_id}/download-xml",
             200,
             response_type='binary'
         )
