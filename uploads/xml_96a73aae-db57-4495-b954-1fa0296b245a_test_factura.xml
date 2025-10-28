@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura>
+  <header>
+    <numero>FACT-2024-001</numero>
+    <fecha>2024-01-15</fecha>
+    <proveedor>Servicios Test S.A.</proveedor>
+  </header>
+  <detalles>
+    <item>
+      <descripcion>Servicios profesionales</descripcion>
+      <cantidad>1</cantidad>
+      <precio>2500.00</precio>
+    </item>
+  </detalles>
+  <totales>
+    <subtotal>2500.00</subtotal>
+    <iva>525.00</iva>
+    <total>3025.00</total>
+  </totales>
+</factura>
