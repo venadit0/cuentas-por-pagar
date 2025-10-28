@@ -529,6 +529,16 @@ async def delete_invoice(invoice_id: str):
                 except Exception as e:
                     logging.warning(f"No se pudo eliminar el archivo PDF: {str(e)}")
         
+        # Eliminar el comprobante de pago si existe
+        if invoice.get('comprobante_pago'):
+            comprobante_path = f"/app/uploads/{invoice['comprobante_pago']}"
+            if os.path.exists(comprobante_path):
+                try:
+                    os.unlink(comprobante_path)
+                    logging.info(f"Comprobante eliminado: {comprobante_path}")
+                except Exception as e:
+                    logging.warning(f"No se pudo eliminar el comprobante: {str(e)}")
+        
         # Eliminar la factura de la base de datos
         result = await db.invoices.delete_one({"id": invoice_id})
         
