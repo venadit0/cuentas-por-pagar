@@ -1204,6 +1204,36 @@ function App() {
     }
   };
 
+  // Comprobante functions
+  const uploadComprobante = async (invoiceId, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      await axios.post(`${API}/invoices/${invoiceId}/upload-comprobante`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast({ title: "Éxito", description: "Comprobante subido correctamente" });
+      loadInvoices(); // Refresh invoice list to show comprobante icon
+    } catch (error) {
+      toast({ 
+        title: "Error", 
+        description: error.response?.data?.detail || "Error subiendo comprobante",
+        variant: "destructive" 
+      });
+    }
+  };
+
+  const downloadComprobante = async (invoiceId, numeroFactura) => {
+    try {
+      const res = await axios.get(`${API}/invoices/${invoiceId}/download-comprobante`, { responseType: 'blob' });
+      downloadFile(res.data, `comprobante_${numeroFactura}.pdf`);
+      toast({ title: "Descarga iniciada", description: `Comprobante de factura ${numeroFactura}` });
+    } catch (error) {
+      toast({ title: "Error", description: "No se pudo descargar el comprobante", variant: "destructive" });
+    }
+  };
+
   // Download functions using the safe download hook
   const downloadPDF = async (invoiceId, numeroFactura) => {
     try {
