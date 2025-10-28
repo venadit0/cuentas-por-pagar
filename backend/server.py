@@ -669,6 +669,16 @@ async def delete_invoice(invoice_id: str):
                 except Exception as e:
                     logging.warning(f"No se pudo eliminar el comprobante: {str(e)}")
         
+        # Eliminar el archivo XML si existe
+        if invoice.get('archivo_xml'):
+            xml_path = f"/app/uploads/{invoice['archivo_xml']}"
+            if os.path.exists(xml_path):
+                try:
+                    os.unlink(xml_path)
+                    logging.info(f"Archivo XML eliminado: {xml_path}")
+                except Exception as e:
+                    logging.warning(f"No se pudo eliminar el archivo XML: {str(e)}")
+        
         # Eliminar la factura de la base de datos
         result = await db.invoices.delete_one({"id": invoice_id})
         
