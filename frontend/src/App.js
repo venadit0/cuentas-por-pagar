@@ -471,6 +471,11 @@ const InvoiceManager = ({
   const [showDeleteComprobante, setShowDeleteComprobante] = useState(false);
   const [deletingComprobante, setDeletingComprobante] = useState(null);
 
+  // Password confirmation for all deletions
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [passwordDialogInfo, setPasswordDialogInfo] = useState({ title: '', description: '' });
+
   const { toast } = useToast();
 
   // Filter invoices
