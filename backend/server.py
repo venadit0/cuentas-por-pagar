@@ -391,6 +391,51 @@ async def update_invoice_contract(invoice_id: str, update: InvoiceContractUpdate
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/invoices/{invoice_id}/upload-comprobante")
+async def upload_comprobante_pago(invoice_id: str, file: UploadFile = File(...)):
+    """Sube un comprobante de pago para una factura"""
+    try:
+        # Verificar que la factura existe
+        invoice = await db.invoices.find_one({"id": invoice_id})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        # Verificar que es un PDF
+        if not file.filename.endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="Solo se permiten archivos PDF")
+        
+        # Crear nombre único para el archivo
+        unique_filename = f"comprobante_{uuid.uuid4()}_{file.filename}"
+        file_path = f"/app/uploads/{unique_filename}"
+        
+        # Guardar archivo
+        content = await file.read()
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+        
+        # Actualizar la factura con la información del comprobante
+        result = await db.invoices.update_one(
+            {"id": invoice_id},
+            {"$set": {
+                "comprobante_pago": unique_filename,
+                "comprobante_original": file.filename
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        return {
+            "success": True,
+            "message": "Comprobante de pago subido correctamente",
+            "comprobante_filename": unique_filename
+        }
+        
+    except Exception as e:
+        logging.error(f"Error subiendo comprobante: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/invoices/{invoice_id}/download")
 async def download_invoice_pdf(invoice_id: str):
     """Descarga el archivo PDF de una factura"""
