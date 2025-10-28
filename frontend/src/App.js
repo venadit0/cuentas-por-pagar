@@ -59,97 +59,34 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Completely DOM-free download system using modern browser APIs
+// COMPLETELY SAFE download without any DOM manipulation
 const useDownload = () => {
-  const downloadFile = useCallback(async (blob, filename) => {
+  const downloadFile = useCallback((blob, filename) => {
     try {
-      // Method 1: Use File System Access API if available (modern browsers)
-      if ('showSaveFilePicker' in window) {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: filename,
-            types: [{
-              description: 'Files',
-              accept: { '*/*': ['.pdf', '.xml', '.xlsx'] }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(blob);
-          await writable.close();
-          return;
-        } catch (fsError) {
-          // User cancelled or API not supported, fall through to fallback
-        }
-      }
-
-      // Method 2: Use navigator.clipboard if it's a small file
-      if (blob.size < 1024 * 1024) { // Less than 1MB
-        try {
-          const text = await blob.text();
-          await navigator.clipboard.writeText(text);
-          console.log('Content copied to clipboard');
-          return;
-        } catch (clipError) {
-          // Clipboard not available, continue to fallback
-        }
-      }
-
-      // Method 3: Fallback - Use URL.createObjectURL with window.open (no DOM manipulation)
+      // Create object URL
       const url = URL.createObjectURL(blob);
-      const newWindow = window.open(url, '_blank');
       
-      if (newWindow) {
-        // Set the title to suggest download
-        newWindow.document.title = filename;
-        // Clean up after a delay
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-          try {
-            newWindow.close();
-          } catch (e) {
-            // User might have closed it already
-          }
-        }, 3000);
-      } else {
-        // If popup blocked, create download via data URL
-        const dataUrl = `data:application/octet-stream;base64,${await blobToBase64(blob)}`;
-        window.location.href = dataUrl;
-        URL.revokeObjectURL(url);
-      }
+      // Create invisible link but NEVER add to DOM
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      
+      // Trigger download WITHOUT DOM manipulation
+      link.dispatchEvent(new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      }));
+      
+      // Immediate cleanup - no timeout, no DOM operations
+      URL.revokeObjectURL(url);
+      
     } catch (error) {
       console.error('Download error:', error);
-      // Last resort: try to save to downloads folder using fetch
-      try {
-        const url = URL.createObjectURL(blob);
-        fetch(url).then(response => response.blob()).then(blob => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const dataUrl = reader.result;
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = filename;
-            a.click();
-          };
-          reader.readAsDataURL(blob);
-        });
-        URL.revokeObjectURL(url);
-      } catch (finalError) {
-        console.error('All download methods failed:', finalError);
-      }
     }
   }, []);
 
   return downloadFile;
-};
-
-// Helper function to convert blob to base64
-const blobToBase64 = (blob) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 };
 
 // Password confirmation dialog component
