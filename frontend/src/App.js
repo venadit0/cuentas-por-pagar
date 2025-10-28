@@ -689,6 +689,28 @@ const InvoiceManager = ({
                                 <Download className="h-4 w-4" />
                               </Button>
                             )}
+                            {inv.estado_pago === "pendiente" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => openComprobanteUpload(inv)}
+                                className="text-purple-600"
+                                title="Subir Comprobante de Pago"
+                              >
+                                <Receipt className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {inv.comprobante_pago && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => onDownloadComprobante(inv.id, inv.numero_factura)}
+                                className="text-green-600"
+                                title="Descargar Comprobante de Pago"
+                              >
+                                <Receipt className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               variant="outline"
