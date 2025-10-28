@@ -1423,6 +1423,78 @@ const InvoiceManager = ({
         </DialogContent>
       </Dialog>
 
+      {/* Edit Provider Dialog */}
+      <Dialog open={showEditProvider} onOpenChange={setShowEditProvider}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit3 className="h-5 w-5" />
+              Editar Nombre del Proveedor
+            </DialogTitle>
+            <DialogDescription>
+              Factura <strong>{editingProviderInvoice?.numero_factura}</strong>
+              <br />
+              Proveedor actual: <strong>{editingProviderInvoice?.nombre_proveedor}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Nombre del Proveedor</Label>
+              <Input
+                value={providerForm}
+                onChange={(e) => setProviderForm(e.target.value)}
+                placeholder="Ingrese el nombre del proveedor..."
+                className="mt-2"
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowEditProvider(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button onClick={handleUpdateProvider} className="flex-1 bg-green-600 hover:bg-green-700">
+                Actualizar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Invoice Number Dialog */}
+      <Dialog open={showEditInvoiceNumber} onOpenChange={setShowEditInvoiceNumber}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit3 className="h-5 w-5" />
+              Editar Número de Factura
+            </DialogTitle>
+            <DialogDescription>
+              Proveedor: <strong>{editingNumberInvoice?.nombre_proveedor}</strong>
+              <br />
+              Número actual: <strong>{editingNumberInvoice?.numero_factura}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Número de Factura</Label>
+              <Input
+                value={invoiceNumberForm}
+                onChange={(e) => setInvoiceNumberForm(e.target.value)}
+                placeholder="Ingrese el número de factura..."
+                className="mt-2"
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowEditInvoiceNumber(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button onClick={handleUpdateInvoiceNumber} className="flex-1 bg-green-600 hover:bg-green-700">
+                Actualizar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Comprobante Dialog */}
       <Dialog open={showDeleteComprobante} onOpenChange={setShowDeleteComprobante}>
         <DialogContent>
