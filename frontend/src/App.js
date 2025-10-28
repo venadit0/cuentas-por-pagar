@@ -1307,6 +1307,8 @@ function App() {
         onUpdateContract={updateContract}
         onDeleteInvoice={deleteInvoice}
         onDownloadPDF={downloadPDF}
+        onUploadComprobante={uploadComprobante}
+        onDownloadComprobante={downloadComprobante}
         onExportPendientes={exportPendientes}
         onExportPagadas={exportPagadas}
         onExportResumen={exportResumen}
