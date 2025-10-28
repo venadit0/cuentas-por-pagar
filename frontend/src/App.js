@@ -118,9 +118,13 @@ const PasswordDialog = ({ isOpen, onClose, onConfirm, title, description }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handlePasswordSubmit();
+    try {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handlePasswordSubmit();
+      }
+    } catch (error) {
+      console.error('Error in key press:', error);
     }
   };
 
