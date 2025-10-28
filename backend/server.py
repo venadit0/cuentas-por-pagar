@@ -473,6 +473,43 @@ async def download_invoice_pdf(invoice_id: str):
         raise HTTPException(status_code=500, detail=f"Error descargando el PDF: {str(e)}")
 
 
+@api_router.get("/invoices/{invoice_id}/download-comprobante")
+async def download_comprobante_pago(invoice_id: str):
+    """Descarga el comprobante de pago de una factura"""
+    try:
+        # Buscar la factura en la base de datos
+        invoice = await db.invoices.find_one({"id": invoice_id})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        # Verificar que tiene comprobante de pago
+        if not invoice.get('comprobante_pago'):
+            raise HTTPException(status_code=404, detail="No hay comprobante de pago asociado a esta factura")
+        
+        # Construir la ruta del archivo
+        file_path = f"/app/uploads/{invoice['comprobante_pago']}"
+        
+        # Verificar que el archivo existe
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Archivo de comprobante no encontrado en el servidor")
+        
+        # Obtener el nombre original o usar uno por defecto
+        filename = invoice.get('comprobante_original', f"comprobante_{invoice['numero_factura']}.pdf")
+        
+        # Retornar el archivo para descarga
+        return FileResponse(
+            path=file_path,
+            filename=filename,
+            media_type='application/pdf'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error descargando comprobante: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error descargando el comprobante: {str(e)}")
+
+
 @api_router.delete("/invoices/{invoice_id}")
 async def delete_invoice(invoice_id: str):
     """Elimina una factura y su archivo PDF asociado"""
