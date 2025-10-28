@@ -557,6 +557,43 @@ async def download_comprobante_pago(invoice_id: str):
         raise HTTPException(status_code=500, detail=f"Error descargando el comprobante: {str(e)}")
 
 
+@api_router.get("/invoices/{invoice_id}/download-xml")
+async def download_xml_file(invoice_id: str):
+    """Descarga el archivo XML de una factura"""
+    try:
+        # Buscar la factura en la base de datos
+        invoice = await db.invoices.find_one({"id": invoice_id})
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Factura no encontrada")
+        
+        # Verificar que tiene archivo XML
+        if not invoice.get('archivo_xml'):
+            raise HTTPException(status_code=404, detail="No hay archivo XML asociado a esta factura")
+        
+        # Construir la ruta del archivo
+        file_path = f"/app/uploads/{invoice['archivo_xml']}"
+        
+        # Verificar que el archivo existe
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Archivo XML no encontrado en el servidor")
+        
+        # Obtener el nombre original o usar uno por defecto
+        filename = invoice.get('xml_original', f"xml_{invoice['numero_factura']}.xml")
+        
+        # Retornar el archivo para descarga
+        return FileResponse(
+            path=file_path,
+            filename=filename,
+            media_type='application/xml'
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error descargando XML: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error descargando el XML: {str(e)}")
+
+
 @api_router.delete("/invoices/{invoice_id}/delete-comprobante")
 async def delete_comprobante_pago(invoice_id: str):
     """Elimina el comprobante de pago de una factura"""
