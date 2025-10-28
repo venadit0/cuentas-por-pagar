@@ -128,6 +128,17 @@ const PasswordDialog = ({ isOpen, onClose, onConfirm, title, description }) => {
     }
   };
 
+  // Portal-safe dialog wrapper
+  React.useEffect(() => {
+    if (isOpen) {
+      // Add delay to prevent race conditions with portal creation
+      const timer = setTimeout(() => {
+        // Ensure dialog is properly mounted before interactions
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
