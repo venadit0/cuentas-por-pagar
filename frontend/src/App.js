@@ -946,7 +946,18 @@ const InvoiceManager = ({
                   <TableBody>
                     {filteredInvoices.map((inv) => (
                       <TableRow key={`inv-${inv.id}`}>
-                        <TableCell className="font-medium">{inv.numero_factura}</TableCell>
+                        <TableCell className="font-medium">
+                          {inv.numero_factura}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditInvoiceNumber(inv)}
+                            className="ml-2 h-6 w-6 p-0 text-green-600"
+                            title="Editar Número de Factura"
+                          >
+                            <Edit3 className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
                         <TableCell>
                           {inv.numero_contrato || "N/A"}
                           <Button
@@ -958,7 +969,18 @@ const InvoiceManager = ({
                             <Edit3 className="h-3 w-3" />
                           </Button>
                         </TableCell>
-                        <TableCell>{inv.nombre_proveedor}</TableCell>
+                        <TableCell>
+                          {inv.nombre_proveedor}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditProvider(inv)}
+                            className="ml-2 h-6 w-6 p-0 text-green-600"
+                            title="Editar Nombre del Proveedor"
+                          >
+                            <Edit3 className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
                         <TableCell>{formatDate(inv.fecha_factura)}</TableCell>
                         <TableCell className="font-semibold">{formatCurrency(inv.monto)}</TableCell>
                         <TableCell>
