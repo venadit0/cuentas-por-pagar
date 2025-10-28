@@ -1738,6 +1738,8 @@ function App() {
         onUploadComprobante={uploadComprobante}
         onDownloadComprobante={downloadComprobante}
         onDeleteComprobante={deleteComprobante}
+        onUploadXml={uploadXml}
+        onDownloadXml={downloadXml}
         onExportPendientes={exportPendientes}
         onExportPagadas={exportPagadas}
         onExportResumen={exportResumen}
