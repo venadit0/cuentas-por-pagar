@@ -64,6 +64,8 @@ class Invoice(BaseModel):
     fecha_creacion: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     archivo_pdf: Optional[str] = None  # Nombre único del archivo
     archivo_original: Optional[str] = None  # Nombre original del archivo
+    comprobante_pago: Optional[str] = None  # Nombre único del comprobante de pago
+    comprobante_original: Optional[str] = None  # Nombre original del comprobante
 
 class InvoiceCreate(BaseModel):
     empresa_id: str  # Nueva relación con empresa
