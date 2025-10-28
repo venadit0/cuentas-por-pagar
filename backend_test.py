@@ -1343,6 +1343,27 @@ def main():
     print("\n🚫 Testing Comprobante Error Cases...")
     tester.test_comprobante_error_cases()
     
+    print("\n📄 Testing NEW XML Upload Functionality...")
+    tester.test_xml_upload()
+    
+    print("\n📥 Testing NEW XML Download Functionality...")
+    tester.test_xml_download()
+    
+    print("\n📋 Testing Invoice Listing with XML Fields...")
+    tester.test_invoice_with_xml_fields()
+    
+    print("\n🔍 Testing XML Validation...")
+    tester.test_xml_validation()
+    
+    print("\n❌ Testing XML Download Without XML...")
+    tester.test_xml_download_without_xml()
+    
+    print("\n🔄 Testing Complete XML Workflow...")
+    tester.test_xml_full_workflow()
+    
+    print("\n🧹 Testing XML File Cleanup on Deletion...")
+    tester.test_xml_file_cleanup_on_deletion()
+    
     # Print final results
     print("\n" + "=" * 50)
     print(f"📊 FINAL RESULTS:")
