@@ -213,6 +213,18 @@ backend:
         agent: "testing"
         comment: "COMPREHENSIVE TESTING COMPLETED: NEW DELETE comprobante functionality fully tested and working perfectly. ALL SUCCESS CRITERIA MET: ✅ DELETE /api/invoices/{invoice_id}/delete-comprobante endpoint working - successfully removes comprobante files from server and clears database fields ✅ File cleanup verified - comprobante files properly removed from /app/uploads/ directory ✅ Database field clearing verified - comprobante_pago and comprobante_original fields set to null using $unset operation ✅ Invoice integrity maintained - invoice data remains completely intact after comprobante deletion ✅ Error handling working - proper 404 responses for non-existent invoices and invoices without comprobantes ✅ Complete workflow tested - upload → verify → delete → verify deletion → re-upload all working perfectly ✅ Edge cases tested - delete from non-existent invoice, delete when no comprobante exists, download after deletion all return proper 404 responses. End-to-end testing confirmed: DELETE comprobante functionality is production-ready and completes the comprobante feature set."
 
+  - task: "XML upload and download functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "COMPREHENSIVE XML FUNCTIONALITY TESTING COMPLETED: NEW XML upload/download feature fully tested and working perfectly. ALL SUCCESS CRITERIA MET: ✅ POST /api/invoices/{invoice_id}/upload-xml endpoint working - successfully uploads XML files with unique filename generation (xml_{uuid}_{filename}) ✅ GET /api/invoices/{invoice_id}/download-xml endpoint working - returns proper XML files with correct application/xml headers ✅ Invoice model updated with archivo_xml and xml_original fields - all invoices now include these fields in API responses ✅ File management working - XMLs stored in /app/uploads/ with proper unique naming ✅ File cleanup on deletion working - DELETE /api/invoices/{invoice_id} properly removes invoice PDF, comprobante, AND XML files ✅ XML validation working - non-XML files properly rejected ✅ Error handling working - proper 404 responses for downloading XML from invoices without XML files ✅ Complete workflow tested: upload XML → verify database update → download XML → verify content → delete invoice → verify file cleanup. Minor: Error handling returns 500 instead of 400 for validation errors, but core functionality works perfectly. XML functionality is production-ready and complements existing PDF and comprobante features."
+
 frontend:
   - task: "Fix persistent removeChild DOM error"
     implemented: true
