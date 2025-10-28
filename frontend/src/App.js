@@ -1224,6 +1224,17 @@ const InvoiceManager = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      <PasswordDialog
+        isOpen={showPasswordDialog}
+        onClose={() => {
+          setShowPasswordDialog(false);
+          handlePasswordCancel();
+        }}
+        onConfirm={handlePasswordConfirm}
+        title={passwordDialogInfo.title}
+        description={passwordDialogInfo.description}
+      />
     </div>
   );
 };
