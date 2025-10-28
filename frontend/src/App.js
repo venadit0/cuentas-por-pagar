@@ -1595,4 +1595,11 @@ function App() {
   );
 }
 
-export default App;
+// Wrap the App with ErrorBoundary to prevent red error screens
+const AppWithErrorBoundary = () => (
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
+
+export default AppWithErrorBoundary;
