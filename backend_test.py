@@ -1230,7 +1230,7 @@ class InvoiceAPITester:
         success2, download_data = self.run_test(
             "XML Workflow Step 2: Verify Upload (Download)",
             "GET",
-            f"invoices/{self.created_invoice_id}/download-xml",
+            f"invoices/{invoice_id}/download-xml",
             200,
             response_type='binary'
         )
