@@ -66,6 +66,8 @@ class Invoice(BaseModel):
     archivo_original: Optional[str] = None  # Nombre original del archivo
     comprobante_pago: Optional[str] = None  # Nombre único del comprobante de pago
     comprobante_original: Optional[str] = None  # Nombre original del comprobante
+    archivo_xml: Optional[str] = None  # Nombre único del archivo XML
+    xml_original: Optional[str] = None  # Nombre original del archivo XML
 
 class InvoiceCreate(BaseModel):
     empresa_id: str  # Nueva relación con empresa
