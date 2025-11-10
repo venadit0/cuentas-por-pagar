@@ -508,8 +508,8 @@ async def update_invoice_status(invoice_id: str, update: InvoiceUpdate, current_
 
 
 @api_router.put("/invoices/{invoice_id}/contrato")
-async def update_invoice_contract(invoice_id: str, update: InvoiceContractUpdate):
-    """Actualiza el número de contrato de una factura"""
+async def update_invoice_contract(invoice_id: str, update: InvoiceContractUpdate, current_user: UserData = Depends(require_admin)):
+    """Actualiza el número de contrato de una factura - Solo admin"""
     try:
         result = await db.invoices.update_one(
             {"id": invoice_id},
