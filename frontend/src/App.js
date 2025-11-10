@@ -552,7 +552,7 @@ const CompanyManager = ({
 });
 
 // Invoice management component - Using Dialog Manager for safe dialog handling
-const InvoiceManager = React.memo(({ 
+const InvoiceManager = ({ 
   empresa, 
   invoices, 
   resumen, 
