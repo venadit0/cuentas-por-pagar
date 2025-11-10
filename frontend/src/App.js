@@ -737,62 +737,62 @@ const InvoiceManager = React.memo(({
     dialogManager.closeDialog();
   }, [dialogManager]);
 
-  const openXmlUpload = (invoice) => {
+  const openXmlUpload = useCallback((invoice) => {
     setUploadingXmlInvoice(invoice);
     setXmlFile(null);
-    setShowXmlUpload(true);
-  };
+    dialogManager.openDialog('xmlUpload');
+  }, [dialogManager]);
 
-  const handleXmlFileSelect = (event) => {
+  const handleXmlFileSelect = useCallback((event) => {
     const file = event.target.files[0];
     if (file && file.name.toLowerCase().endsWith('.xml')) {
       setXmlFile(file);
     } else {
       toast({ title: "Error", description: "Selecciona un archivo XML válido", variant: "destructive" });
     }
-  };
+  }, [toast]);
 
-  const handleUploadXml = async () => {
+  const handleUploadXml = useCallback(async () => {
     if (!xmlFile || !uploadingXmlInvoice) return;
     
     setUploadingXml(true);
     try {
       await onUploadXml(uploadingXmlInvoice.id, xmlFile);
-      setShowXmlUpload(false);
+      dialogManager.closeDialog();
       setUploadingXmlInvoice(null);
       setXmlFile(null);
     } finally {
       setUploadingXml(false);
     }
-  };
+  }, [xmlFile, uploadingXmlInvoice, onUploadXml, dialogManager]);
 
-  const openEditProvider = (invoice) => {
+  const openEditProvider = useCallback((invoice) => {
     setEditingProviderInvoice(invoice);
     setProviderForm(invoice.nombre_proveedor || "");
-    setShowEditProvider(true);
-  };
+    dialogManager.openDialog('editProvider');
+  }, [dialogManager]);
 
-  const handleUpdateProvider = async () => {
+  const handleUpdateProvider = useCallback(async () => {
     if (!editingProviderInvoice) return;
     await onUpdateProvider(editingProviderInvoice.id, providerForm);
-    setShowEditProvider(false);
+    dialogManager.closeDialog();
     setEditingProviderInvoice(null);
     setProviderForm("");
-  };
+  }, [editingProviderInvoice, providerForm, onUpdateProvider, dialogManager]);
 
-  const openEditInvoiceNumber = (invoice) => {
+  const openEditInvoiceNumber = useCallback((invoice) => {
     setEditingNumberInvoice(invoice);
     setInvoiceNumberForm(invoice.numero_factura || "");
-    setShowEditInvoiceNumber(true);
-  };
+    dialogManager.openDialog('editInvoiceNumber');
+  }, [dialogManager]);
 
-  const handleUpdateInvoiceNumber = async () => {
+  const handleUpdateInvoiceNumber = useCallback(async () => {
     if (!editingNumberInvoice) return;
     await onUpdateInvoiceNumber(editingNumberInvoice.id, invoiceNumberForm);
-    setShowEditInvoiceNumber(false);
+    dialogManager.closeDialog();
     setEditingNumberInvoice(null);
     setInvoiceNumberForm("");
-  };
+  }, [editingNumberInvoice, invoiceNumberForm, onUpdateInvoiceNumber, dialogManager]);
 
   return (
     <div className="min-h-screen bg-slate-50">
