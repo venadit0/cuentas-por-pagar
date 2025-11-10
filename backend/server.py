@@ -704,8 +704,8 @@ async def download_invoice_pdf(invoice_id: str, current_user: UserData = Depends
 
 
 @api_router.get("/invoices/{invoice_id}/download-comprobante")
-async def download_comprobante_pago(invoice_id: str):
-    """Descarga el comprobante de pago de una factura"""
+async def download_comprobante_pago(invoice_id: str, current_user: UserData = Depends(get_current_user)):
+    """Descarga el comprobante de pago de una factura - Requiere autenticación"""
     try:
         # Buscar la factura en la base de datos
         invoice = await db.invoices.find_one({"id": invoice_id})
