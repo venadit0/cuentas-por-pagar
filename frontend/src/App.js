@@ -528,8 +528,8 @@ const CompanyManager = React.memo(({
   );
 });
 
-// Invoice management component
-const InvoiceManager = ({ 
+// Invoice management component - Using Dialog Manager for safe dialog handling
+const InvoiceManager = React.memo(({ 
   empresa, 
   invoices, 
   resumen, 
@@ -551,6 +551,9 @@ const InvoiceManager = ({
   onExportPagadas,
   onExportResumen
 }) => {
+  // Use Dialog Manager to prevent multiple dialogs from being open simultaneously
+  const dialogManager = useDialogManager();
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [filterEstado, setFilterEstado] = useState("todos");
@@ -558,42 +561,34 @@ const InvoiceManager = ({
   const [filteredInvoices, setFilteredInvoices] = useState([]);
   
   // Contract editing
-  const [showContractEdit, setShowContractEdit] = useState(false);
   const [contractForm, setContractForm] = useState("");
   const [editingInvoice, setEditingInvoice] = useState(null);
   
   // Delete invoice
-  const [showDeleteInvoice, setShowDeleteInvoice] = useState(false);
   const [deletingInvoice, setDeletingInvoice] = useState(null);
 
   // Upload comprobante
-  const [showComprobanteUpload, setShowComprobanteUpload] = useState(false);
   const [uploadingComprobante, setUploadingComprobante] = useState(false);
   const [comprobanteFile, setComprobanteFile] = useState(null);
   const [uploadingInvoice, setUploadingInvoice] = useState(null);
 
   // Delete comprobante
-  const [showDeleteComprobante, setShowDeleteComprobante] = useState(false);
   const [deletingComprobante, setDeletingComprobante] = useState(null);
 
   // Upload XML
-  const [showXmlUpload, setShowXmlUpload] = useState(false);
   const [uploadingXml, setUploadingXml] = useState(false);
   const [xmlFile, setXmlFile] = useState(null);
   const [uploadingXmlInvoice, setUploadingXmlInvoice] = useState(null);
 
   // Edit provider
-  const [showEditProvider, setShowEditProvider] = useState(false);
   const [providerForm, setProviderForm] = useState("");
   const [editingProviderInvoice, setEditingProviderInvoice] = useState(null);
 
   // Edit invoice number
-  const [showEditInvoiceNumber, setShowEditInvoiceNumber] = useState(false);
   const [invoiceNumberForm, setInvoiceNumberForm] = useState("");
   const [editingNumberInvoice, setEditingNumberInvoice] = useState(null);
 
   // Password confirmation for all deletions
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [passwordDialogInfo, setPasswordDialogInfo] = useState({ title: '', description: '' });
 
