@@ -9,7 +9,7 @@ import json
 def test_real_pdf():
     """Test with the actual test_invoice.pdf file"""
     
-    base_url = "https://invoice-central.preview.emergentagent.com"
+    base_url = "https://payables-master.preview.emergentagent.com"
     api_url = f"{base_url}/api"
     test_empresa_id = "4d87e4d4-33f4-4f22-9c6f-a113c49038fc"
     
