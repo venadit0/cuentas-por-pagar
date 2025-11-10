@@ -852,16 +852,17 @@ const InvoiceManager = React.memo(({
           </div>
         </div>
 
-        <Tabs defaultValue="upload" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="upload">Subir PDF</TabsTrigger>
+        <Tabs defaultValue={isAdmin ? "upload" : "dashboard"} className="space-y-6">
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-4'}`}>
+            {isAdmin && <TabsTrigger value="upload">Subir PDF</TabsTrigger>}
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="facturas">Facturas</TabsTrigger>
             <TabsTrigger value="pagadas">Facturas Pagadas</TabsTrigger>
             <TabsTrigger value="resumen">Resumen</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="upload">
+          {isAdmin && (
+            <TabsContent value="upload">
             <Card className="max-w-2xl mx-auto">
               <CardHeader className="text-center">
                 <CardTitle className="flex items-center justify-center gap-2">
