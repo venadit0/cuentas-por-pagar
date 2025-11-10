@@ -1191,8 +1191,8 @@ async def export_resumen_general_excel(empresa_id: str):
 
 # ENDPOINT PARA ELIMINAR EMPRESA (SOFT DELETE)
 @api_router.delete("/empresas/{empresa_id}")
-async def delete_empresa(empresa_id: str):
-    """Elimina una empresa (soft delete) y todas sus facturas"""
+async def delete_empresa(empresa_id: str, current_user: UserData = Depends(require_admin)):
+    """Elimina una empresa (soft delete) y todas sus facturas - Solo admin"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
