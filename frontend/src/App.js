@@ -572,7 +572,9 @@ const InvoiceManager = React.memo(({
   onDownloadXml,
   onExportPendientes,
   onExportPagadas,
-  onExportResumen
+  onExportResumen,
+  user,
+  onLogout
 }) => {
   // Use Dialog Manager to prevent multiple dialogs from being open simultaneously
   const dialogManager = useDialogManager();
