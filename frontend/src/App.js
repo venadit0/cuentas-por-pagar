@@ -1068,7 +1068,7 @@ const InvoiceManager = ({
                         <TableCell className="font-semibold">{formatCurrency(inv.monto)}</TableCell>
                         <TableCell>
                           <Badge variant={inv.estado_pago === "pagado" ? "secondary" : "destructive"}>
-                            {inv.estado_pago}
+                            {inv.estado_pago === "pagado" ? "Pagada" : "Pendiente"}
                           </Badge>
                         </TableCell>
                         <TableCell>
