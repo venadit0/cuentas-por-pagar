@@ -463,8 +463,8 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...), current_user
 
 
 @api_router.get("/invoices/{empresa_id}", response_model=List[Invoice])
-async def get_invoices(empresa_id: str, estado: Optional[str] = None, proveedor: Optional[str] = None):
-    """Obtiene todas las facturas de una empresa con filtros opcionales"""
+async def get_invoices(empresa_id: str, estado: Optional[str] = None, proveedor: Optional[str] = None, current_user: UserData = Depends(get_current_user)):
+    """Obtiene todas las facturas de una empresa - Requiere autenticación"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
