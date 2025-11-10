@@ -1965,22 +1965,36 @@ function App() {
   const exportPendientes = async () => {
     if (!empresa) return;
     try {
-      const res = await axios.get(`${API}/export/facturas-pendientes/${empresa.id}`, { responseType: 'blob' });
+      const token = localStorage.getItem('auth_token');
+      const res = await axios.get(`${API}/export/facturas-pendientes/${empresa.id}`, { 
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       downloadFile(res.data, `facturas_pendientes_${empresa.nombre.replace(/\s+/g, '_')}.xlsx`);
       toast({ title: "Exportado", description: "Excel de facturas pendientes descargado" });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo exportar", variant: "destructive" });
+      console.error('Error exportando pendientes:', error);
+      toast({ title: "Error", description: error.response?.data?.detail || "No se pudo exportar", variant: "destructive" });
     }
   };
 
   const exportPagadas = async () => {
     if (!empresa) return;
     try {
-      const res = await axios.get(`${API}/export/facturas-pagadas/${empresa.id}`, { responseType: 'blob' });
+      const token = localStorage.getItem('auth_token');
+      const res = await axios.get(`${API}/export/facturas-pagadas/${empresa.id}`, { 
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       downloadFile(res.data, `facturas_pagadas_${empresa.nombre.replace(/\s+/g, '_')}.xlsx`);
       toast({ title: "Exportado", description: "Excel de facturas pagadas descargado" });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo exportar", variant: "destructive" });
+      console.error('Error exportando pagadas:', error);
+      toast({ title: "Error", description: error.response?.data?.detail || "No se pudo exportar", variant: "destructive" });
     }
   };
 
