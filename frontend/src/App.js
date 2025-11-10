@@ -60,17 +60,7 @@ class ErrorBoundary extends React.Component {
     }
   }
 
-  // Reset error state after a delay to allow recovery
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.hasError && !prevState.hasError) {
-      // Auto-recover after 100ms - this prevents the error screen from showing
-      // for transient errors during navigation
-      setTimeout(() => {
-        console.warn('[ERROR BOUNDARY] Auto-recovering from error');
-        this.setState({ hasError: false, error: null });
-      }, 100);
-    }
-  }
+  // Removed auto-recovery to prevent interference with button clicks
 
   render() {
     // Even if there's an error, we auto-recover, so this screen rarely shows
