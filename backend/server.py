@@ -667,8 +667,8 @@ async def upload_xml_file(invoice_id: str, file: UploadFile = File(...), current
 
 
 @api_router.get("/invoices/{invoice_id}/download")
-async def download_invoice_pdf(invoice_id: str):
-    """Descarga el archivo PDF de una factura"""
+async def download_invoice_pdf(invoice_id: str, current_user: UserData = Depends(get_current_user)):
+    """Descarga el archivo PDF de una factura - Requiere autenticación"""
     try:
         # Buscar la factura en la base de datos
         invoice = await db.invoices.find_one({"id": invoice_id})
