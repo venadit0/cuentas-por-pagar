@@ -647,6 +647,13 @@ const InvoiceManager = ({
 
   const { toast } = useToast();
 
+  // Reset filters when empresa changes
+  useEffect(() => {
+    setFilterEstado("todos");
+    setFilterProveedor("");
+    console.log('[FILTER] Filters reset for new empresa');
+  }, [empresa?.id]);
+
   // Filter invoices with error handling
   useEffect(() => {
     try {
