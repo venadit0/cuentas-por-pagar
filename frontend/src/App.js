@@ -647,18 +647,34 @@ const InvoiceManager = ({
 
   const { toast } = useToast();
 
-  // Filter invoices
+  // Filter invoices with error handling
   useEffect(() => {
-    let filtered = [...invoices];
-    if (filterEstado !== "todos") {
-      filtered = filtered.filter(inv => inv.estado_pago === filterEstado);
+    try {
+      let filtered = [...invoices];
+      
+      // Filter by estado
+      if (filterEstado && filterEstado !== "todos") {
+        filtered = filtered.filter(inv => {
+          return inv && inv.estado_pago === filterEstado;
+        });
+      }
+      
+      // Filter by proveedor
+      if (filterProveedor && filterProveedor.trim() !== "") {
+        filtered = filtered.filter(inv => {
+          const proveedor = inv?.nombre_proveedor || "";
+          const searchTerm = filterProveedor.toLowerCase().trim();
+          return proveedor.toLowerCase().includes(searchTerm);
+        });
+      }
+      
+      setFilteredInvoices(filtered);
+      console.log(`[FILTER] Applied filters: estado=${filterEstado}, proveedor="${filterProveedor}", results=${filtered.length}`);
+    } catch (error) {
+      console.error('[FILTER ERROR]', error);
+      // Fallback: show all invoices if filter fails
+      setFilteredInvoices(invoices);
     }
-    if (filterProveedor) {
-      filtered = filtered.filter(inv => 
-        inv.nombre_proveedor.toLowerCase().includes(filterProveedor.toLowerCase())
-      );
-    }
-    setFilteredInvoices(filtered);
   }, [invoices, filterEstado, filterProveedor]);
 
   const formatCurrency = (amount) => new Intl.NumberFormat("es-AR", {
