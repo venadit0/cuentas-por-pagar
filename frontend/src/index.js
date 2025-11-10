@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Global error handler for DOM/Portal errors that React ErrorBoundary cannot catch
 window.addEventListener('error', (event) => {
@@ -27,4 +28,9 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // Use legacy rendering mode to avoid React 18 concurrent rendering issues with Radix UI portals
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <AuthProvider>
+    <App />
+  </AuthProvider>, 
+  document.getElementById("root")
+);
