@@ -227,7 +227,9 @@ const CompanyManager = React.memo(({
   onSelectEmpresa, 
   onCreateEmpresa, 
   onEditEmpresa, 
-  onDeleteEmpresa 
+  onDeleteEmpresa,
+  user,
+  onLogout 
 }) => {
   // Use Dialog Manager to prevent multiple dialogs from being open simultaneously
   const dialogManager = useDialogManager();
