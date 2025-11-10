@@ -1316,31 +1316,32 @@ const InvoiceManager = React.memo(({
       </div>
 
       {/* Contract Edit Dialog */}
-      <Dialog open={showContractEdit} onOpenChange={setShowContractEdit}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <File className="h-5 w-5" />
+      <Dialog key="contract-edit-dialog" open={dialogManager.isDialogOpen('contractEdit')} onOpenChange={() => dialogManager.closeDialog()}>
+        <DialogContent key="contract-edit-content">
+          <DialogHeader key="contract-edit-header">
+            <DialogTitle key="contract-edit-title" className="flex items-center gap-2">
+              <File key="contract-edit-icon" className="h-5 w-5" />
               Editar Número de Contrato
             </DialogTitle>
-            <DialogDescription>
-              Factura <strong>{editingInvoice?.numero_factura}</strong> de <strong>{editingInvoice?.nombre_proveedor}</strong>
+            <DialogDescription key="contract-edit-desc">
+              Factura <strong key="contract-edit-invoice-num">{editingInvoice?.numero_factura}</strong> de <strong key="contract-edit-provider">{editingInvoice?.nombre_proveedor}</strong>
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Número de Contrato</Label>
+          <div key="contract-edit-body" className="space-y-4">
+            <div key="contract-edit-input-wrapper">
+              <Label key="contract-edit-label">Número de Contrato</Label>
               <Input
+                key="contract-edit-input"
                 value={contractForm}
                 onChange={(e) => setContractForm(e.target.value)}
                 placeholder="Ej: CT-2024-001"
               />
             </div>
-            <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowContractEdit(false)} className="flex-1">
+            <div key="contract-edit-buttons" className="flex gap-3 pt-4">
+              <Button key="contract-edit-cancel" variant="outline" onClick={() => dialogManager.closeDialog()} className="flex-1">
                 Cancelar
               </Button>
-              <Button onClick={handleUpdateContract} className="flex-1">
+              <Button key="contract-edit-submit" onClick={handleUpdateContract} className="flex-1">
                 Actualizar
               </Button>
             </div>
