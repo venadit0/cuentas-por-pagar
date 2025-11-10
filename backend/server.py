@@ -778,8 +778,8 @@ async def download_xml_file(invoice_id: str):
 
 
 @api_router.delete("/invoices/{invoice_id}/delete-comprobante")
-async def delete_comprobante_pago(invoice_id: str):
-    """Elimina el comprobante de pago de una factura"""
+async def delete_comprobante_pago(invoice_id: str, current_user: UserData = Depends(require_admin)):
+    """Elimina el comprobante de pago de una factura - Solo admin"""
     try:
         # Buscar la factura en la base de datos
         invoice = await db.invoices.find_one({"id": invoice_id})
