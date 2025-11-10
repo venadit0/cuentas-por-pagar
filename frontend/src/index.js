@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === 'development') {
 // Multiple layers of suppression to prevent error overlay
 
 // Layer 1: Global error handler (highest priority, capture phase)
+// NOTE: Only suppress removeChild errors, let everything else through
 window.addEventListener('error', (event) => {
   const errorMessage = event.error?.message || event.message || '';
   const isRemoveChildError = 
@@ -47,11 +48,10 @@ window.addEventListener('error', (event) => {
     
   if (isRemoveChildError) {
     console.warn('[LAYER 1 SUPPRESSED] removeChild error');
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    event.preventDefault();
+    event.preventDefault(); // Only prevent default, don't stop propagation
     return false;
   }
+  // Let other errors propagate normally
 }, true);
 
 // Layer 2: Unhandled rejection handler
@@ -59,11 +59,10 @@ window.addEventListener('unhandledrejection', (event) => {
   const errorMessage = event.reason?.message || '';
   if (errorMessage.includes('removeChild') || errorMessage.includes('eliminar no es un hijo')) {
     console.warn('[LAYER 2 SUPPRESSED] removeChild promise rejection');
-    event.stopImmediatePropagation();
-    event.stopPropagation();
     event.preventDefault();
     return false;
   }
+  // Let other rejections propagate normally
 }, true);
 
 // Layer 3: Console error override
