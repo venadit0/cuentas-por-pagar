@@ -1151,8 +1151,8 @@ async def export_facturas_pagadas_excel(empresa_id: str, current_user: UserData 
 
 
 @api_router.get("/export/resumen-general/{empresa_id}")
-async def export_resumen_general_excel(empresa_id: str):
-    """Exporta resumen general a Excel"""
+async def export_resumen_general_excel(empresa_id: str, current_user: UserData = Depends(get_current_user)):
+    """Exporta resumen general a Excel - Requiere autenticación"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
