@@ -1017,8 +1017,8 @@ async def get_resumen_general(empresa_id: str, current_user: UserData = Depends(
 
 
 @api_router.get("/estado-cuenta/pagadas/{empresa_id}", response_model=EstadoCuentaPagadas)
-async def get_estado_cuenta_pagadas(empresa_id: str):
-    """Obtiene el estado de cuenta de todas las facturas pagadas de una empresa"""
+async def get_estado_cuenta_pagadas(empresa_id: str, current_user: UserData = Depends(get_current_user)):
+    """Obtiene el estado de cuenta de todas las facturas pagadas de una empresa - Requiere autenticación"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
