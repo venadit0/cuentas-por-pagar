@@ -216,6 +216,49 @@ async def root():
     return {"message": "API de Cuentas por Pagar"}
 
 
+# AUTHENTICATION ENDPOINTS
+@api_router.post("/auth/login", response_model=Token)
+async def login(login_data: LoginRequest):
+    """
+    Authenticate user and return JWT token
+    """
+    user = USERS_DB.get(login_data.username)
+    
+    if not user or not verify_password(login_data.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["username"], "role": user["role"]},
+        expires_delta=access_token_expires
+    )
+    
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        role=user["role"],
+        username=user["username"]
+    )
+
+@api_router.get("/auth/me", response_model=UserData)
+async def get_current_user_data(current_user: UserData = Depends(get_current_user)):
+    """
+    Get current authenticated user information
+    """
+    return current_user
+
+@api_router.post("/auth/logout")
+async def logout():
+    """
+    Logout endpoint (client should delete token)
+    """
+    return {"message": "Logout successful"}
+
+
 # ENDPOINTS DE EMPRESAS
 @api_router.get("/empresas", response_model=List[Empresa])
 async def get_empresas():
