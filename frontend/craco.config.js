@@ -43,4 +43,10 @@ module.exports = {
       return webpackConfig;
     },
   },
+  devServer: {
+    // Disable error overlay to prevent removeChild errors from showing
+    client: {
+      overlay: false,
+    },
+  },
 };
