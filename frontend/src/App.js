@@ -1879,11 +1879,18 @@ function App() {
 
   const downloadComprobante = async (invoiceId, numeroFactura) => {
     try {
-      const res = await axios.get(`${API}/invoices/${invoiceId}/download-comprobante`, { responseType: 'blob' });
+      const token = localStorage.getItem('auth_token');
+      const res = await axios.get(`${API}/invoices/${invoiceId}/download-comprobante`, { 
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       downloadFile(res.data, `comprobante_${numeroFactura}.pdf`);
       toast({ title: "Descarga iniciada", description: `Comprobante de factura ${numeroFactura}` });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo descargar el comprobante", variant: "destructive" });
+      console.error('Error descargando comprobante:', error);
+      toast({ title: "Error", description: error.response?.data?.detail || "No se pudo descargar el comprobante", variant: "destructive" });
     }
   };
   const deleteComprobante = async (invoiceId) => {
