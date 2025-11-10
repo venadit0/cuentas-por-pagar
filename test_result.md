@@ -249,6 +249,18 @@ backend:
         agent: "testing"
         comment: "COMPREHENSIVE EDIT INVOICE NUMBER TESTING COMPLETED: NEW invoice number edit functionality fully tested and working perfectly. ALL SUCCESS CRITERIA MET: ✅ PUT /api/invoices/{invoice_id}/numero endpoint working - successfully updates invoice number (numero_factura) field ✅ Database integrity verified - only target field updated, other invoice fields (provider, amount, dates) remain unchanged ✅ Changes properly persisted - updates confirmed in subsequent GET requests ✅ Integration verified - updated invoice numbers appear correctly in invoice listings and all reports ✅ Error handling working - proper validation with 422 responses for missing fields, 500 responses for non-existent invoices (backend returns 500 with '404: Factura no encontrada' message) ✅ Data validation working - accepts empty strings, validates required fields via Pydantic models ✅ Response format correct - returns success message and updated invoice number. Invoice number edit functionality is production-ready and allows users to correct Gemini AI extraction errors for improved data accuracy."
 
+  - task: "Implement user authentication with limited privileges"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "AUTHENTICATION SYSTEM FULLY IMPLEMENTED: ✅ Backend: JWT authentication with 8-hour token expiration, protected all endpoints (GET requires auth, POST/PUT/DELETE require admin) ✅ Frontend: Login component, AuthContext with React Context API, token storage in localStorage, axios interceptor for Authorization header ✅ User Roles: admin (full access) and contratos/SEDENA199156 (readonly - can view, download, export but cannot create/edit/delete) ✅ UI Restrictions: readonly users cannot see 'Nueva Empresa' button or 'Subir PDF' tab ✅ User Header: displays username, role, and logout button on all screens ✅ TESTING: Login tested successfully, user 'contratos' authenticated and dashboard loaded with proper role restrictions. Backend protection verified via curl."
+
 frontend:
   - task: "Fix persistent removeChild DOM error"
     implemented: true
