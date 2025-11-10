@@ -1922,11 +1922,18 @@ function App() {
 
   const downloadXml = async (invoiceId, numeroFactura) => {
     try {
-      const res = await axios.get(`${API}/invoices/${invoiceId}/download-xml`, { responseType: 'blob' });
+      const token = localStorage.getItem('auth_token');
+      const res = await axios.get(`${API}/invoices/${invoiceId}/download-xml`, { 
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       downloadFile(res.data, `xml_${numeroFactura}.xml`);
       toast({ title: "Descarga iniciada", description: `Archivo XML de factura ${numeroFactura}` });
     } catch (error) {
-      toast({ title: "Error", description: "No se pudo descargar el archivo XML", variant: "destructive" });
+      console.error('Error descargando XML:', error);
+      toast({ title: "Error", description: error.response?.data?.detail || "No se pudo descargar el archivo XML", variant: "destructive" });
     }
   };
 
