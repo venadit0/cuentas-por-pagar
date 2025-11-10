@@ -824,8 +824,8 @@ async def delete_comprobante_pago(invoice_id: str, current_user: UserData = Depe
 
 
 @api_router.delete("/invoices/{invoice_id}")
-async def delete_invoice(invoice_id: str):
-    """Elimina una factura y su archivo PDF asociado"""
+async def delete_invoice(invoice_id: str, current_user: UserData = Depends(require_admin)):
+    """Elimina una factura y su archivo PDF asociado - Solo admin"""
     try:
         # Buscar la factura en la base de datos
         invoice = await db.invoices.find_one({"id": invoice_id})
