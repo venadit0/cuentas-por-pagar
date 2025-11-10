@@ -1626,7 +1626,7 @@ const InvoiceManager = ({
       />
     </div>
   );
-});
+};
 
 // Main App component
 function App() {
