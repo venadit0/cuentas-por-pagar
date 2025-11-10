@@ -219,33 +219,30 @@ const PasswordDialog = React.memo(({ isOpen, onClose, onConfirm, title, descript
   );
 });
 
-// Company management component
-const CompanyManager = ({ 
+// Company management component - Using Dialog Manager for safe dialog handling
+const CompanyManager = React.memo(({ 
   empresas, 
   onSelectEmpresa, 
   onCreateEmpresa, 
   onEditEmpresa, 
   onDeleteEmpresa 
 }) => {
-  const [showNewEmpresa, setShowNewEmpresa] = useState(false);
-  const [showEditEmpresa, setShowEditEmpresa] = useState(false);
-  const [showDeleteEmpresa, setShowDeleteEmpresa] = useState(false);
+  // Use Dialog Manager to prevent multiple dialogs from being open simultaneously
+  const dialogManager = useDialogManager();
+  
   const [empresaForm, setEmpresaForm] = useState({
     nombre: "", rut_cuit: "", direccion: "", telefono: "", email: ""
   });
   const [editingEmpresa, setEditingEmpresa] = useState(null);
   const [deletingEmpresa, setDeletingEmpresa] = useState(null);
-
-  // Password confirmation for deletions
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
 
-  const openNewEmpresa = () => {
+  const openNewEmpresa = useCallback(() => {
     setEmpresaForm({ nombre: "", rut_cuit: "", direccion: "", telefono: "", email: "" });
-    setShowNewEmpresa(true);
-  };
+    dialogManager.openDialog('newEmpresa');
+  }, [dialogManager]);
 
-  const openEditEmpresa = (emp) => {
+  const openEditEmpresa = useCallback((emp) => {
     setEditingEmpresa(emp);
     setEmpresaForm({
       nombre: emp.nombre || "",
@@ -254,37 +251,39 @@ const CompanyManager = ({
       telefono: emp.telefono || "",
       email: emp.email || ""
     });
-    setShowEditEmpresa(true);
-  };
+    dialogManager.openDialog('editEmpresa');
+  }, [dialogManager]);
 
-  const openDeleteEmpresa = (emp) => {
+  const openDeleteEmpresa = useCallback((emp) => {
     setDeletingEmpresa(emp);
-    setShowDeleteEmpresa(true);
-  };
+    dialogManager.openDialog('deleteEmpresa');
+  }, [dialogManager]);
 
-  const handleCreateEmpresa = () => {
+  const handleCreateEmpresa = useCallback(() => {
     onCreateEmpresa(empresaForm);
-    setShowNewEmpresa(false);
+    dialogManager.closeDialog();
     setEmpresaForm({ nombre: "", rut_cuit: "", direccion: "", telefono: "", email: "" });
-  };
+  }, [empresaForm, onCreateEmpresa, dialogManager]);
 
-  const handleEditEmpresa = () => {
+  const handleEditEmpresa = useCallback(() => {
     onEditEmpresa(editingEmpresa.id, empresaForm);
-    setShowEditEmpresa(false);
+    dialogManager.closeDialog();
     setEditingEmpresa(null);
-  };
+  }, [editingEmpresa, empresaForm, onEditEmpresa, dialogManager]);
 
-  const handleDeleteEmpresa = () => {
-    // Primer paso: cerrar diálogo de confirmación y abrir diálogo de contraseña
-    setShowDeleteEmpresa(false);
+  const handleDeleteEmpresa = useCallback(() => {
+    // Close current dialog and open password dialog
     setPendingAction(() => () => {
       onDeleteEmpresa(deletingEmpresa.id);
       setDeletingEmpresa(null);
     });
-    setShowPasswordDialog(true);
-  };
+    dialogManager.openDialog('password', {
+      title: 'Eliminar Empresa',
+      description: `Se eliminará permanentemente la empresa "${deletingEmpresa?.nombre}" y todas sus facturas asociadas.`
+    });
+  }, [deletingEmpresa, onDeleteEmpresa, dialogManager]);
 
-  const handlePasswordConfirm = async () => {
+  const handlePasswordConfirm = useCallback(async () => {
     if (pendingAction) {
       try {
         await pendingAction();
@@ -293,12 +292,14 @@ const CompanyManager = ({
       }
       setPendingAction(null);
     }
-  };
+    dialogManager.closeDialog();
+  }, [pendingAction, dialogManager]);
 
-  const handlePasswordCancel = () => {
+  const handlePasswordCancel = useCallback(() => {
     setPendingAction(null);
     setDeletingEmpresa(null);
-  };
+    dialogManager.closeDialog();
+  }, [dialogManager]);
 
   return (
     <div className="min-h-screen bg-slate-50">
