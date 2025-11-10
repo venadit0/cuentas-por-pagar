@@ -1350,21 +1350,21 @@ const InvoiceManager = React.memo(({
       </Dialog>
 
       {/* Delete Invoice Dialog */}
-      <Dialog open={showDeleteInvoice} onOpenChange={setShowDeleteInvoice}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar Eliminación</DialogTitle>
-            <DialogDescription>
-              ¿Eliminar factura <strong>{deletingInvoice?.numero_factura}</strong> de <strong>{deletingInvoice?.nombre_proveedor}</strong>?
-              <br /><br />
+      <Dialog key="delete-invoice-dialog" open={dialogManager.isDialogOpen('deleteInvoice')} onOpenChange={() => dialogManager.closeDialog()}>
+        <DialogContent key="delete-invoice-content">
+          <DialogHeader key="delete-invoice-header">
+            <DialogTitle key="delete-invoice-title">Confirmar Eliminación</DialogTitle>
+            <DialogDescription key="delete-invoice-desc">
+              ¿Eliminar factura <strong key="delete-invoice-num">{deletingInvoice?.numero_factura}</strong> de <strong key="delete-invoice-provider">{deletingInvoice?.nombre_proveedor}</strong>?
+              <br key="delete-invoice-br1" /><br key="delete-invoice-br2" />
               Esta acción eliminará también el archivo PDF asociado.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex gap-3 pt-4">
-            <Button variant="outline" onClick={() => setShowDeleteInvoice(false)} className="flex-1">
+          <div key="delete-invoice-buttons" className="flex gap-3 pt-4">
+            <Button key="delete-invoice-cancel" variant="outline" onClick={() => dialogManager.closeDialog()} className="flex-1">
               Cancelar
             </Button>
-            <Button onClick={handleDeleteInvoice} className="flex-1 bg-red-600 hover:bg-red-700">
+            <Button key="delete-invoice-submit" onClick={handleDeleteInvoice} className="flex-1 bg-red-600 hover:bg-red-700">
               Eliminar
             </Button>
           </div>
