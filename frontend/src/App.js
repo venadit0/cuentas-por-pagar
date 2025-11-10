@@ -20,6 +20,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 // Error Boundary to catch and handle React errors gracefully
+// Filters out removeChild errors (React 18 + Radix UI known issue)
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -27,11 +28,31 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
+    // Filter out removeChild errors - these are known React 18 + Radix UI issues
+    const errorMessage = error?.message || '';
+    const isRemoveChildError = 
+      errorMessage.includes('removeChild') || 
+      errorMessage.includes('node to be removed is not a child') ||
+      errorMessage.includes('eliminar no es un hijo');
+    
+    if (isRemoveChildError) {
+      console.warn('[SUPPRESSED BY ERROR BOUNDARY] removeChild error (React 18 + Radix UI compatibility)');
+      return { hasError: false, error: null }; // Don't show error screen
+    }
+    
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('React Error Boundary caught an error:', error, errorInfo);
+    const errorMessage = error?.message || '';
+    const isRemoveChildError = 
+      errorMessage.includes('removeChild') || 
+      errorMessage.includes('node to be removed is not a child') ||
+      errorMessage.includes('eliminar no es un hijo');
+    
+    if (!isRemoveChildError) {
+      console.error('React Error Boundary caught an error:', error, errorInfo);
+    }
   }
 
   render() {
