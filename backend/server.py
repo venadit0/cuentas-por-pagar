@@ -1075,8 +1075,8 @@ async def get_estado_cuenta_pagadas(empresa_id: str, current_user: UserData = De
 
 # NUEVOS ENDPOINTS PARA EXPORTAR A EXCEL
 @api_router.get("/export/facturas-pendientes/{empresa_id}")
-async def export_facturas_pendientes_excel(empresa_id: str):
-    """Exporta facturas pendientes a Excel"""
+async def export_facturas_pendientes_excel(empresa_id: str, current_user: UserData = Depends(get_current_user)):
+    """Exporta facturas pendientes a Excel - Requiere autenticación"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
