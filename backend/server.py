@@ -261,8 +261,8 @@ async def logout():
 
 # ENDPOINTS DE EMPRESAS
 @api_router.get("/empresas", response_model=List[Empresa])
-async def get_empresas():
-    """Obtiene todas las empresas"""
+async def get_empresas(current_user: UserData = Depends(get_current_user)):
+    """Obtiene todas las empresas - Requiere autenticación"""
     try:
         empresas = await db.empresas.find({"activa": True}).to_list(1000)
         return [Empresa(**parse_from_mongo(empresa)) for empresa in empresas]
@@ -272,8 +272,8 @@ async def get_empresas():
 
 
 @api_router.post("/empresas", response_model=Empresa)
-async def create_empresa(empresa: EmpresaCreate):
-    """Crea una nueva empresa"""
+async def create_empresa(empresa: EmpresaCreate, current_user: UserData = Depends(require_admin)):
+    """Crea una nueva empresa - Solo admin"""
     try:
         empresa_data = empresa.dict()
         empresa_obj = Empresa(**empresa_data)
