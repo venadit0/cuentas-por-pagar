@@ -945,8 +945,8 @@ async def get_resumen_por_proveedor(empresa_id: str, current_user: UserData = De
 
 
 @api_router.get("/resumen/general/{empresa_id}", response_model=ResumenGeneral)
-async def get_resumen_general(empresa_id: str):
-    """Obtiene resumen general de todas las deudas de una empresa"""
+async def get_resumen_general(empresa_id: str, current_user: UserData = Depends(get_current_user)):
+    """Obtiene resumen general de todas las deudas de una empresa - Requiere autenticación"""
     try:
         # Verificar que la empresa existe
         empresa = await db.empresas.find_one({"id": empresa_id, "activa": True})
