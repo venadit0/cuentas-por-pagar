@@ -1230,7 +1230,32 @@ const InvoiceManager = ({
                 </Table>
                 {filteredInvoices.length === 0 && (
                   <div className="text-center py-8 text-slate-500">
-                    No se encontraron facturas
+                    {invoices.length === 0 ? (
+                      <div>
+                        <p className="font-medium">No hay facturas registradas</p>
+                        <p className="text-sm mt-2">Sube un PDF de factura para comenzar</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-medium">No se encontraron facturas con los filtros aplicados</p>
+                        <p className="text-sm mt-2">
+                          Filtros activos: 
+                          {filterEstado !== "todos" && ` Estado: ${filterEstado}`}
+                          {filterProveedor && ` | Proveedor: "${filterProveedor}"`}
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="mt-4"
+                          onClick={() => {
+                            setFilterEstado("todos");
+                            setFilterProveedor("");
+                          }}
+                        >
+                          Limpiar Filtros
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
