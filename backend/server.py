@@ -762,7 +762,7 @@ async def download_xml_file(invoice_id: str, current_user: UserData = Depends(ge
             raise HTTPException(status_code=404, detail="No hay archivo XML asociado a esta factura")
         
         # Construir la ruta del archivo
-        file_path = f"/app/uploads/{invoice['archivo_xml']}"
+        file_path = f"{UPLOAD_DIR}/{invoice['archivo_xml']}"
         
         # Verificar que el archivo existe
         if not os.path.exists(file_path):
