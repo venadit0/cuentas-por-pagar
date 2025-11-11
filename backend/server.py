@@ -347,7 +347,7 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...), current_user
         file_id = str(uuid.uuid4())
         file_extension = ".pdf"
         unique_filename = f"{file_id}{file_extension}"
-        upload_path = f"/app/uploads/{unique_filename}"
+        upload_path = f"{UPLOAD_DIR}/{unique_filename}"
         
         # Guardar archivo permanentemente
         with open(upload_path, "wb") as buffer:
