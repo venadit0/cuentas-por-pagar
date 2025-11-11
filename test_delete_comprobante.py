@@ -10,7 +10,7 @@ import json
 
 class DeleteComprobanteTest:
     def __init__(self):
-        self.base_url = "https://payables-master.preview.emergentagent.com"
+        self.base_url = "https://invoice-genius-58.preview.emergentagent.com"
         self.api_url = f"{self.base_url}/api"
         
         # Use existing invoice with comprobante

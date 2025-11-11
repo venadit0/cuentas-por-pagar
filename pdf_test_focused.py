@@ -11,7 +11,7 @@ import tempfile
 
 class PDFProcessingTester:
     def __init__(self):
-        self.base_url = "https://payables-master.preview.emergentagent.com"
+        self.base_url = "https://invoice-genius-58.preview.emergentagent.com"
         self.api_url = f"{self.base_url}/api"
         self.test_empresa_id = "4d87e4d4-33f4-4f22-9c6f-a113c49038fc"  # Valid company ID
         self.created_invoice_id = None

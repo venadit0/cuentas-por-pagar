@@ -9,7 +9,7 @@ import tempfile
 
 def create_test_invoice():
     """Create a test invoice by direct API call (simulating successful PDF processing)"""
-    api_url = "https://payables-master.preview.emergentagent.com/api"
+    api_url = "https://invoice-genius-58.preview.emergentagent.com/api"
     
     # Use existing company
     company_id = "4d87e4d4-33f4-4f22-9c6f-a113c49038fc"
@@ -93,7 +93,7 @@ def test_complete_comprobante_workflow():
     print("🚀 COMPREHENSIVE COMPROBANTE FUNCTIONALITY TEST")
     print("=" * 60)
     
-    api_url = "https://payables-master.preview.emergentagent.com/api"
+    api_url = "https://invoice-genius-58.preview.emergentagent.com/api"
     company_id = "4d87e4d4-33f4-4f22-9c6f-a113c49038fc"
     comprobante_file = "/app/comprobante_test.pdf"
     
