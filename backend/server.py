@@ -799,7 +799,7 @@ async def delete_comprobante_pago(invoice_id: str, current_user: UserData = Depe
             raise HTTPException(status_code=404, detail="No hay comprobante de pago asociado a esta factura")
         
         # Eliminar el archivo del servidor si existe
-        file_path = f"/app/uploads/{invoice['comprobante_pago']}"
+        file_path = f"{UPLOAD_DIR}/{invoice['comprobante_pago']}"
         if os.path.exists(file_path):
             try:
                 os.unlink(file_path)
