@@ -1215,7 +1215,7 @@ async def delete_empresa(empresa_id: str, current_user: UserData = Depends(requi
         for factura in facturas:
             # Eliminar archivo PDF si existe
             if factura.get('archivo_pdf'):
-                file_path = f"/app/uploads/{factura['archivo_pdf']}"
+                file_path = f"{UPLOAD_DIR}/{factura['archivo_pdf']}"
                 if os.path.exists(file_path):
                     try:
                         os.unlink(file_path)
