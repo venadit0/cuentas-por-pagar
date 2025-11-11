@@ -725,7 +725,7 @@ async def download_comprobante_pago(invoice_id: str, current_user: UserData = De
             raise HTTPException(status_code=404, detail="No hay comprobante de pago asociado a esta factura")
         
         # Construir la ruta del archivo
-        file_path = f"/app/uploads/{invoice['comprobante_pago']}"
+        file_path = f"{UPLOAD_DIR}/{invoice['comprobante_pago']}"
         
         # Verificar que el archivo existe
         if not os.path.exists(file_path):
