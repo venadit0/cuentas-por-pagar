@@ -224,6 +224,29 @@ async def root():
     return {"message": "API de Cuentas por Pagar"}
 
 
+@api_router.get("/health")
+async def health_check():
+    """
+    Health check endpoint para monitoreo externo.
+    Este endpoint es público y no requiere autenticación.
+    Úsalo con servicios como UptimeRobot para mantener la app activa.
+    """
+    try:
+        # Verificar conexión a MongoDB con timeout corto
+        await db.command('ping')
+        return {
+            "status": "healthy",
+            "message": "API y MongoDB funcionando correctamente",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "message": f"Error de conexión: {str(e)}",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+
 # AUTHENTICATION ENDPOINTS
 @api_router.post("/auth/login", response_model=Token)
 async def login(login_data: LoginRequest):
