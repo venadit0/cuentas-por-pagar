@@ -1091,6 +1091,7 @@ const InvoiceManager = ({
               </CardHeader>
               <CardContent>
                 <TooltipProvider>
+                <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -1101,7 +1102,7 @@ const InvoiceManager = ({
                       <TableHead>Monto</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead className="text-center">Archivos</TableHead>
-                      <TableHead>Acciones</TableHead>
+                      <TableHead className="min-w-[500px]">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1369,6 +1370,7 @@ const InvoiceManager = ({
                     ))}
                   </TableBody>
                 </Table>
+                </div>
                 </TooltipProvider>
                 {filteredInvoices.length === 0 && (
                   <div className="text-center py-8 text-slate-500">
@@ -1460,6 +1462,7 @@ const InvoiceManager = ({
                       </CardHeader>
                       <CardContent>
                         <TooltipProvider>
+                        <div className="overflow-x-auto">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -1469,7 +1472,7 @@ const InvoiceManager = ({
                               <TableHead>Fecha</TableHead>
                               <TableHead>Monto</TableHead>
                               <TableHead className="text-center">Archivos</TableHead>
-                              <TableHead>Acciones</TableHead>
+                              <TableHead className="min-w-[300px]">Acciones</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1597,6 +1600,7 @@ const InvoiceManager = ({
                             ))}
                           </TableBody>
                         </Table>
+                        </div>
                         </TooltipProvider>
                       </CardContent>
                     </Card>
