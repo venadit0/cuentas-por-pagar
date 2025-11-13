@@ -1456,6 +1456,7 @@ const InvoiceManager = ({
                         </div>
                       </CardHeader>
                       <CardContent>
+                        <TooltipProvider>
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -1464,7 +1465,7 @@ const InvoiceManager = ({
                               <TableHead>Proveedor</TableHead>
                               <TableHead>Fecha</TableHead>
                               <TableHead>Monto</TableHead>
-                              <TableHead>Archivo</TableHead>
+                              <TableHead className="text-center">Archivos</TableHead>
                               <TableHead>Acciones</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -1478,23 +1479,122 @@ const InvoiceManager = ({
                                 <TableCell className="font-semibold text-green-600">
                                   {formatCurrency(fac.monto)}
                                 </TableCell>
-                                <TableCell>{fac.archivo_original || fac.archivo_pdf || "N/A"}</TableCell>
                                 <TableCell>
-                                  {fac.archivo_pdf && (
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => onDownloadPDF(fac.id, fac.numero_factura)}
-                                      className="text-blue-600"
-                                    >
-                                      <Download className="h-4 w-4" />
-                                    </Button>
-                                  )}
+                                  <div className="flex gap-2 justify-center items-center">
+                                    {/* Indicador de PDF */}
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded ${fac.archivo_pdf ? 'bg-green-100' : 'bg-red-100'}`}>
+                                          {fac.archivo_pdf ? (
+                                            <FileCheck className="h-4 w-4 text-green-600" />
+                                          ) : (
+                                            <XCircle className="h-4 w-4 text-red-600" />
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>{fac.archivo_pdf ? '✅ PDF disponible' : '❌ Sin PDF'}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+
+                                    {/* Indicador de XML */}
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded ${fac.archivo_xml ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                                          {fac.archivo_xml ? (
+                                            <FileText className="h-4 w-4 text-blue-600" />
+                                          ) : (
+                                            <XCircle className="h-4 w-4 text-gray-400" />
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>{fac.archivo_xml ? '✅ XML disponible' : '⚠️ Sin XML'}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+
+                                    {/* Indicador de Comprobante */}
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded ${fac.comprobante_pago ? 'bg-purple-100' : 'bg-gray-100'}`}>
+                                          {fac.comprobante_pago ? (
+                                            <Receipt className="h-4 w-4 text-purple-600" />
+                                          ) : (
+                                            <XCircle className="h-4 w-4 text-gray-400" />
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>{fac.comprobante_pago ? '✅ Comprobante de pago' : '⚠️ Sin comprobante'}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-1">
+                                    {/* Descargar PDF - Solo si existe */}
+                                    {fac.archivo_pdf && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => onDownloadPDF(fac.id, fac.numero_factura)}
+                                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                          >
+                                            <Download className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>📄 Descargar PDF</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+
+                                    {/* Descargar Comprobante - Solo si existe */}
+                                    {fac.comprobante_pago && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => onDownloadComprobante(fac.id, fac.numero_factura)}
+                                            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                          >
+                                            <Receipt className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>🧾 Descargar comprobante</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+
+                                    {/* Descargar XML - Solo si existe */}
+                                    {fac.archivo_xml && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => onDownloadXml(fac.id, fac.numero_factura)}
+                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                          >
+                                            <FileText className="h-4 w-4" />
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>📥 Descargar XML</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
+                        </TooltipProvider>
                       </CardContent>
                     </Card>
                   )}
