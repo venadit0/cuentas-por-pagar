@@ -33,6 +33,10 @@ db = client[os.environ['DB_NAME']]
 # Upload directory configuration
 UPLOAD_DIR = os.environ.get('UPLOAD_DIR', '/app/uploads')
 
+# Create uploads directory if it doesn't exist
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+logging.info(f"Upload directory configured: {UPLOAD_DIR}")
+
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -372,10 +376,15 @@ async def upload_pdf(empresa_id: str, file: UploadFile = File(...), current_user
         unique_filename = f"{file_id}{file_extension}"
         upload_path = f"{UPLOAD_DIR}/{unique_filename}"
         
+        # Ensure upload directory exists
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        
         # Guardar archivo permanentemente
         with open(upload_path, "wb") as buffer:
             content = await file.read()
             buffer.write(content)
+        
+        logging.info(f"PDF saved successfully: {upload_path}")
         
         # Guardar temporalmente para procesamiento con Gemini
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
@@ -624,10 +633,15 @@ async def upload_comprobante_pago(invoice_id: str, file: UploadFile = File(...),
         unique_filename = f"comprobante_{uuid.uuid4()}_{file.filename}"
         file_path = f"{UPLOAD_DIR}/{unique_filename}"
         
+        # Ensure upload directory exists
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        
         # Guardar archivo
         content = await file.read()
         with open(file_path, "wb") as buffer:
             buffer.write(content)
+        
+        logging.info(f"Comprobante saved successfully: {file_path}")
         
         # Actualizar la factura con la información del comprobante
         result = await db.invoices.update_one(

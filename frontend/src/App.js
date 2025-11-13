@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 import { Label } from "./components/ui/label";
-import { Upload, FileText, DollarSign, Users, Clock, CheckCircle, Building, Plus, ArrowRight, Download, Trash2, FileSpreadsheet, Settings, Edit3, AlertTriangle, File, Receipt, Lock, X, LogOut, User } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip";
+import { Upload, FileText, DollarSign, Users, Clock, CheckCircle, Building, Plus, ArrowRight, Download, Trash2, FileSpreadsheet, Settings, Edit3, AlertTriangle, File, Receipt, Lock, X, LogOut, User, Check, XCircle, FileUp, FilePlus2, FileCheck } from "lucide-react";
 import { useToast } from "./hooks/use-toast";
 import { Toaster } from "./components/ui/sonner";
 import { useAuth } from "./contexts/AuthContext";
@@ -1089,6 +1090,7 @@ const InvoiceManager = ({
                 </div>
               </CardHeader>
               <CardContent>
+                <TooltipProvider>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -1098,6 +1100,7 @@ const InvoiceManager = ({
                       <TableHead>Fecha</TableHead>
                       <TableHead>Monto</TableHead>
                       <TableHead>Estado</TableHead>
+                      <TableHead className="text-center">Archivos</TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1147,102 +1150,223 @@ const InvoiceManager = ({
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 justify-center items-center">
+                            {/* Indicador de PDF */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className={`flex items-center justify-center w-8 h-8 rounded ${inv.archivo_pdf ? 'bg-green-100' : 'bg-red-100'}`}>
+                                  {inv.archivo_pdf ? (
+                                    <FileCheck className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 text-red-600" />
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{inv.archivo_pdf ? '✅ PDF disponible' : '❌ Sin PDF'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            {/* Indicador de XML */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className={`flex items-center justify-center w-8 h-8 rounded ${inv.archivo_xml ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                                  {inv.archivo_xml ? (
+                                    <FileText className="h-4 w-4 text-blue-600" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 text-gray-400" />
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{inv.archivo_xml ? '✅ XML disponible' : '⚠️ Sin XML'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            {/* Indicador de Comprobante */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className={`flex items-center justify-center w-8 h-8 rounded ${inv.comprobante_pago ? 'bg-purple-100' : 'bg-gray-100'}`}>
+                                  {inv.comprobante_pago ? (
+                                    <Receipt className="h-4 w-4 text-purple-600" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 text-gray-400" />
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{inv.comprobante_pago ? '✅ Comprobante de pago' : '⚠️ Sin comprobante'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 flex-wrap">
                             {inv.estado_pago === "pendiente" ? (
-                              <Button
-                                size="sm"
-                                onClick={() => onUpdateInvoiceStatus(inv.id, "pagado")}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                Marcar Pagado
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => onUpdateInvoiceStatus(inv.id, "pagado")}
+                                    className="bg-green-600 hover:bg-green-700"
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Pagado
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Marcar como pagada</p>
+                                </TooltipContent>
+                              </Tooltip>
                             ) : (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onUpdateInvoiceStatus(inv.id, "pendiente")}
-                              >
-                                Marcar Pendiente
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onUpdateInvoiceStatus(inv.id, "pendiente")}
+                                  >
+                                    <Clock className="h-4 w-4 mr-1" />
+                                    Pendiente
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Marcar como pendiente</p>
+                                </TooltipContent>
+                              </Tooltip>
                             )}
+
+                            {/* Descargar PDF - Solo si existe */}
                             {inv.archivo_pdf && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onDownloadPDF(inv.id, inv.numero_factura)}
-                                className="text-blue-600"
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onDownloadPDF(inv.id, inv.numero_factura)}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>📄 Descargar PDF</p>
+                                </TooltipContent>
+                              </Tooltip>
                             )}
-                            {inv.estado_pago === "pendiente" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => openComprobanteUpload(inv)}
-                                className="text-purple-600"
-                                title="Subir Comprobante de Pago"
-                              >
-                                <Receipt className="h-4 w-4" />
-                              </Button>
+
+                            {/* Subir/Descargar Comprobante */}
+                            {!inv.comprobante_pago ? (
+                              inv.estado_pago === "pendiente" && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => openComprobanteUpload(inv)}
+                                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                    >
+                                      <FileUp className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>📤 Subir comprobante de pago</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )
+                            ) : (
+                              <div className="flex gap-1">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => onDownloadComprobante(inv.id, inv.numero_factura)}
+                                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                    >
+                                      <Receipt className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>📥 Descargar comprobante</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => openDeleteComprobante(inv)}
+                                      className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>🗑️ Eliminar comprobante</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
                             )}
-                            {inv.comprobante_pago && (
-                              <>
+
+                            {/* Subir/Descargar XML */}
+                            {!inv.archivo_xml ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => openXmlUpload(inv)}
+                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  >
+                                    <FilePlus2 className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>📤 Subir archivo XML</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onDownloadXml(inv.id, inv.numero_factura)}
+                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  >
+                                    <FileText className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>📥 Descargar XML</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+
+                            {/* Eliminar Factura */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => onDownloadComprobante(inv.id, inv.numero_factura)}
-                                  className="text-green-600"
-                                  title="Descargar Comprobante de Pago"
-                                >
-                                  <Receipt className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => openDeleteComprobante(inv)}
-                                  className="text-red-500"
-                                  title="Eliminar Comprobante de Pago"
+                                  onClick={() => openDeleteInvoice(inv)}
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
-                              </>
-                            )}
-                            {!inv.archivo_xml ? (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => openXmlUpload(inv)}
-                                className="text-blue-600"
-                                title="Subir Archivo XML"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onDownloadXml(inv.id, inv.numero_factura)}
-                                className="text-blue-600"
-                                title="Descargar Archivo XML"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => openDeleteInvoice(inv)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>🗑️ Eliminar factura</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+                </TooltipProvider>
                 {filteredInvoices.length === 0 && (
                   <div className="text-center py-8 text-slate-500">
                     {invoices.length === 0 ? (
