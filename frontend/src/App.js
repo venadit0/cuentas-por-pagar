@@ -1201,14 +1201,14 @@ const InvoiceManager = ({
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1 flex-wrap">
+                          <div className="flex gap-2 flex-wrap min-w-[500px]">
                             {inv.estado_pago === "pendiente" ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     size="sm"
                                     onClick={() => onUpdateInvoiceStatus(inv.id, "pagado")}
-                                    className="bg-green-600 hover:bg-green-700"
+                                    className="bg-green-600 hover:bg-green-700 min-w-[100px]"
                                   >
                                     <CheckCircle className="h-4 w-4 mr-1" />
                                     Pagado
@@ -1225,6 +1225,7 @@ const InvoiceManager = ({
                                     size="sm"
                                     variant="outline"
                                     onClick={() => onUpdateInvoiceStatus(inv.id, "pendiente")}
+                                    className="min-w-[110px]"
                                   >
                                     <Clock className="h-4 w-4 mr-1" />
                                     Pendiente
@@ -1245,6 +1246,7 @@ const InvoiceManager = ({
                                     variant="outline"
                                     onClick={() => onDownloadPDF(inv.id, inv.numero_factura)}
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    title="PDF"
                                   >
                                     <Download className="h-4 w-4" />
                                   </Button>
@@ -1265,6 +1267,7 @@ const InvoiceManager = ({
                                       variant="outline"
                                       onClick={() => openComprobanteUpload(inv)}
                                       className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                      title="Subir Comprobante"
                                     >
                                       <FileUp className="h-4 w-4" />
                                     </Button>

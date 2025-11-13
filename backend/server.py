@@ -727,9 +727,23 @@ async def download_invoice_pdf(invoice_id: str, current_user: UserData = Depends
         # Construir la ruta del archivo
         file_path = f"{UPLOAD_DIR}/{invoice['archivo_pdf']}"
         
+        # Log para debugging
+        logging.info(f"Intentando descargar: {file_path}")
+        logging.info(f"UPLOAD_DIR: {UPLOAD_DIR}")
+        logging.info(f"archivo_pdf: {invoice['archivo_pdf']}")
+        logging.info(f"¿Existe el archivo?: {os.path.exists(file_path)}")
+        
         # Verificar que el archivo existe
         if not os.path.exists(file_path):
-            raise HTTPException(status_code=404, detail="Archivo PDF no encontrado en el servidor")
+            # Intentar listar archivos en el directorio
+            try:
+                files_in_dir = os.listdir(UPLOAD_DIR)
+                logging.error(f"Archivos en {UPLOAD_DIR}: {len(files_in_dir)} archivos")
+                logging.error(f"Archivo buscado: {invoice['archivo_pdf']}")
+            except Exception as e:
+                logging.error(f"Error listando directorio: {str(e)}")
+            
+            raise HTTPException(status_code=404, detail=f"Archivo PDF no encontrado en el servidor: {invoice['archivo_pdf']}")
         
         # Obtener el nombre original o usar uno por defecto
         filename = invoice.get('archivo_original', f"factura_{invoice['numero_factura']}.pdf")
